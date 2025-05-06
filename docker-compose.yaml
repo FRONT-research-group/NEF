@@ -1,23 +1,23 @@
 version: "3.8"
 
 services:
-  # depends on the db service that we will use.
+  # MongoDB service
   db:
-    build:
-      context: ./db
+    image: mongo:3.8 # image for mongoDB already exists we can ignore the build Dockerfile 
     container_name: db
     restart: unless-stopped
-    env_file: ./db/.env 
+    env_file: ./db/.env
     volumes:
-      - db_data:/var/lib/data
+      - db_data:/data/db
     healthcheck:
-      test: ["CMD", "pg_isready", "-U", "postgres"] # example for PostgreSQL
+      test: ["CMD", "mongo", "--eval", "db.adminCommand('ping')"]
       interval: 10s
       timeout: 5s
       retries: 5
       start_period: 10s
     networks:
       - nef-network
+
 
   # The NEF service depends on the db and backend services.(Panagiwths kai Andreas)
   nef:
