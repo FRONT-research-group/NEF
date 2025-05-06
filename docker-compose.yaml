@@ -1,0 +1,72 @@
+version: "3.8"
+
+services:
+  # depends on the db service that we will use.
+  db:
+    build:
+      context: ./db
+    container_name: db
+    restart: unless-stopped
+    env_file: ./db/.env 
+    volumes:
+      - db_data:/var/lib/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres"] # example for PostgreSQL
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - nef-network
+
+  # The NEF service depends on the db and backend services.(Panagiwths kai Andreas)
+  nef:
+    build:
+      context: ./NEF
+    container_name: nef
+    restart: unless-stopped
+    env_file: ./NEF/.env
+    ports:
+      - "8081:8081"
+    depends_on:
+      db:
+        condition: service_healthy
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8081/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    networks:
+      - nef-network
+
+
+#The backend service depends on the db service.(Batsis)
+  backend:
+    build:
+      context: ./backend
+    container_name: backend
+    restart: unless-stopped
+    env_file: ./backend/.env
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    networks:
+      - nef-network
+
+volumes:
+  db_data:
+
+networks:
+  nef-network:
+    driver: bridge
