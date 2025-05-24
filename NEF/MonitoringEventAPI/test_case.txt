@@ -1,0 +1,195 @@
+{
+  "accuracy": "CGI_ECGI",
+  "msisdn": "001010143245445",
+  "notificationDestination": "http://test_server:8001",
+  "monitoringType": "LOCATION_REPORTING",
+  "maximumNumberOfReports": 3,
+  "monitorExpireTime": "2025-04-11T07:18:26.978Z",
+  "locationType": "CURRENT_LOCATION",
+  "repPeriod": {
+    "duration": 20
+  }
+}
+
+{
+  "accuracy": "CGI_ECGI",
+  "msisdn": "001010143245446",
+  "notificationDestination": "http://test_server:8001",
+  "monitoringType": "LOCATION_REPORTING",
+  "maximumNumberOfReports": 3,
+  "monitorExpireTime": "2025-04-11T07:18:26.978Z",
+  "locationType": "CURRENT_LOCATION",
+  "repPeriod": {
+    "duration": 20
+  }
+}
+
+
+{
+  "accuracy": "CGI_ECGI",
+  "msisdn": "001010143245447",
+  "notificationDestination": "http://test_server:8001",
+  "monitoringType": "LOCATION_REPORTING",
+  "maximumNumberOfReports": 3,
+  "monitorExpireTime": "2025-04-11T07:18:26.978Z",
+  "locationType": "CURRENT_LOCATION",
+  "repPeriod": {
+    "duration": 20
+  }
+}
+
+#model_config = SettingsConfigDict(env_file=os.path.join(os.path.dirname(os.path.dirname(__file__)),"app",".env"))
+
+[{
+    "_id": "001010143245445",
+    "amf_info": {
+        "supi": "imsi-001010143245445",
+        "pei": "imeisv-4370816125816151",
+        "pduSessionId": 1,
+        "dnn": "internet",
+        "sNssai": {
+            "sst": 1
+        },
+        "servingNfId": "215bda8c-147a-41f0-9f31-052e80267e61",
+        "guami": {
+            "plmnId": {
+                "mcc": "001",
+                "mnc": "01"
+            },
+            "amfId": "020040"
+        },
+        "servingNetwork": {
+            "mcc": "001",
+            "mnc": "01"
+        },
+        "n1SmMsg": {
+            "contentId": "5gnas-sm"
+        },
+        "anType": "3GPP_ACCESS",
+        "ratType": "NR",
+        "ueLocation": {
+            "nrLocation": {
+                "tai": {
+                    "plmnId": {
+                        "mcc": "001",
+                        "mnc": "01"
+                    },
+                    "tac": "000001"
+                },
+                "ncgi": {
+                    "plmnId": {
+                        "mcc": "001",
+                        "mnc": "01"
+                    },
+                    "nrCellId": "000000010"
+                },
+                "ueLocationTimestamp": "2025-04-08T13:06:42.904325Z"
+            }
+        },
+        "ueTimeZone": "+00:00",
+        "smContextStatusUri": "http://amf.open5gs.org/namf-callback/v1/imsi-001010143245445/sm-context-status/1",
+        "pcfId": "10ad956a-0bc7-41f0-8934-53bd37770e11"
+    }
+},
+{
+    "_id": "001010143245446",
+    "amf_info": {
+      "supi": "imsi-001010143245446",
+      "pei": "imeisv-4370816125816151",
+      "pduSessionId": 1,
+      "dnn": "internet",
+      "sNssai": {
+        "sst": 1
+      },
+      "servingNfId": "215bda8c-147a-41f0-9f31-052e80267e61",
+      "guami": {
+        "plmnId": {
+          "mcc": "001",
+          "mnc": "01"
+        },
+        "amfId": "020040"
+      },
+      "servingNetwork": {
+        "mcc": "001",
+        "mnc": "01"
+      },
+      "n1SmMsg": {
+        "contentId": "5gnas-sm"
+      },
+      "anType": "3GPP_ACCESS",
+      "ratType": "NR",
+      "ueLocation": {
+        "nrLocation": {
+          "tai": {
+            "plmnId": {
+              "mcc": "001",
+              "mnc": "01"
+            },
+            "tac": "000001"
+          },
+          "ncgi": {
+            "plmnId": {
+              "mcc": "001",
+              "mnc": "01"
+            },
+            "nrCellId": "000000010"
+          },
+          "ueLocationTimestamp": "2025-04-08T13:06:42.904325Z"
+        }
+      },
+      "ueTimeZone": "+00:00",
+      "smContextStatusUri": "http://amf.open5gs.org/namf-callback/v1/imsi-001010143245446/sm-context-status/1",
+      "pcfId": "10ad956a-0bc7-41f0-8934-53bd37770e11"
+    }
+  },
+  {
+    "_id": "001010143245447",
+    "amf_info": {
+      "supi": "imsi-001010143245447",
+      "pei": "imeisv-4370816125816151",
+      "pduSessionId": 1,
+      "dnn": "internet",
+      "sNssai": {
+        "sst": 1
+      },
+      "servingNfId": "215bda8c-147a-41f0-9f31-052e80267e61",
+      "guami": {
+        "plmnId": {
+          "mcc": "001",
+          "mnc": "01"
+        },
+        "amfId": "020040"
+      },
+      "servingNetwork": {
+        "mcc": "001",
+        "mnc": "01"
+      },
+      "n1SmMsg": {
+        "contentId": "5gnas-sm"
+      },
+      "anType": "3GPP_ACCESS",
+      "ratType": "NR",
+      "ueLocation": {
+        "nrLocation": {
+          "tai": {
+            "plmnId": {
+              "mcc": "001",
+              "mnc": "01"
+            },
+            "tac": "000001"
+          },
+          "ncgi": {
+            "plmnId": {
+              "mcc": "001",
+              "mnc": "01"
+            },
+            "nrCellId": "000000010"
+          },
+          "ueLocationTimestamp": "2025-04-08T13:06:42.904325Z"
+        }
+      },
+      "ueTimeZone": "+00:00",
+      "smContextStatusUri": "http://amf.open5gs.org/namf-callback/v1/imsi-001010143245447/sm-context-status/1",
+      "pcfId": "10ad956a-0bc7-41f0-8934-53bd37770e11"
+    }
+  }]
