@@ -26,10 +26,14 @@ def parse_document_to_ue_location(document: dict | None = None) -> LocationInfo:
         )
     else:
         log.info(f"Fetched Docuement: {document}")
-        cell_id = document["amf_info"]["ueLocation"]["nrLocation"]["ncgi"]["nrCellId"]
-        tac_id = document["amf_info"]["ueLocation"]["nrLocation"]["tai"]["tac"]
-        plmn_id = document["amf_info"]["ueLocation"]["nrLocation"]["tai"]["plmnId"]
-        return LocationInfo(cellId=cell_id,trackingAreaId=tac_id,plmnId=plmn_id)
+        cell_id = document["cellId"]
+        tac_id = document["trackingAreaId"]
+        plmn_id = document["plmnId"]
+        routing_aread_id = document["routingAreaId"]
+        enodeb_id = document["enodeBId"]
+        twan_id = document["twanId"]
+        
+        return LocationInfo(cellId=cell_id,trackingAreaId=tac_id,enodeBId=enodeb_id,routingAreaId=routing_aread_id,twanId=twan_id,plmnId=plmn_id)
 
 def create_monitoring_notification(subscription_link: str, event_report: list[MonitoringEventReport]) -> MonitoringNotification:
     log.info(f"I have received the event report for subscription: {subscription_link}") 
