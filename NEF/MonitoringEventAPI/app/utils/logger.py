@@ -2,10 +2,10 @@ import os
 import logging
 from logging.handlers import RotatingFileHandler
 
-from app.config import Settings
+from app.config import get_settings
 
 
-settings = Settings()
+settings = get_settings()
 
 def check_log_path_exists():
     '''

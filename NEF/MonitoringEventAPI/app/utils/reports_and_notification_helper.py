@@ -2,17 +2,17 @@ import asyncio, httpx
 from fastapi import status,HTTPException
 
 from app.utils.logger import get_app_logger
-from app.utils.location_db_data_handler import LocationDbDataHandler
-from app.schemas.monitoring_event import MonitoringEventReport, MonitoringType,MonitoringNotification,LocationInfo
+from app.utils.db_data_handler import DbDataHandler
+from app.schemas.monitoring_event import MonitoringEventReport, MonitoringType,MonitoringNotification,LocationInfo,MonitoringEventSubscriptionRequest
 
 log = get_app_logger()
 
-async def fetch_event_report(location_handler: LocationDbDataHandler, imsi:str, current_rep: int, rep_period: int ) -> MonitoringEventReport:
+async def fetch_event_report(location_db_handler: DbDataHandler, imsi:str, current_rep: int, rep_period: int ) -> MonitoringEventReport:
     log.info(f"Processing report for IMSI: {imsi}, Report Number: {current_rep}")
     if rep_period is not None:
         await asyncio.sleep(rep_period)
 
-    fetched_document = await location_handler.find_location_by_imsi(imsi)
+    fetched_document = await location_db_handler.find_location_by_imsi(imsi)
     location_info = parse_document_to_ue_location(fetched_document)
 
     return MonitoringEventReport(msisdn=imsi,locationInfo=location_info,monitoringType=MonitoringType.LOCATION_REPORTING)
@@ -32,8 +32,22 @@ def parse_document_to_ue_location(document: dict | None = None) -> LocationInfo:
         routing_aread_id = document["routingAreaId"]
         enodeb_id = document["enodeBId"]
         twan_id = document["twanId"]
-        
+
         return LocationInfo(cellId=cell_id,trackingAreaId=tac_id,enodeBId=enodeb_id,routingAreaId=routing_aread_id,twanId=twan_id,plmnId=plmn_id)
+
+def parse_and_tranform_document_from_db(documents: list) -> list[tuple[str,MonitoringEventSubscriptionRequest]]:
+    subscriptions: list[tuple[str,MonitoringEventSubscriptionRequest]] = []
+    for doc in documents:
+        try:
+            subscription_id = doc["_id"]
+            monitoring_event_subscription = doc["monitoringEventSubscription"]
+            fetched_subscription = MonitoringEventSubscriptionRequest(**monitoring_event_subscription)
+            subscriptions.append((subscription_id,fetched_subscription))
+        except Exception as exc:
+            log.error("Error tranfsorming document", exc_info=exc)
+    log.info(f"the documents that converted to subs are {subscriptions}")
+
+    return subscriptions
 
 def create_monitoring_notification(subscription_link: str, event_report: list[MonitoringEventReport]) -> MonitoringNotification:
     log.info(f"I have received the event report for subscription: {subscription_link}") 

@@ -193,3 +193,50 @@
       "pcfId": "10ad956a-0bc7-41f0-8934-53bd37770e11"
     }
   }]
+
+
+
+
+
+
+
+
+
+
+
+[{
+    "_id": "001010143245445",
+    "cellId": "000000010",
+    "trackingAreaId": "000001",
+    "plmnId": {
+      "mcc": "001",
+      "mnc": "01"
+    },
+    "routingAreaId": "",
+    "enodeBId": "",
+    "twanId": ""
+},
+{
+    "_id": "001010143245446",
+    "cellId": "000000010",
+    "trackingAreaId": "000001",
+    "plmnId": {
+      "mcc": "001",
+      "mnc": "01"
+    },
+    "routingAreaId": "",
+    "enodeBId": "",
+    "twanId": ""
+},
+{
+    "_id": "001010143245447",
+    "cellId": "000000010",
+    "trackingAreaId": "000001",
+    "plmnId": {
+      "mcc": "001",
+      "mnc": "01"
+    },
+    "routingAreaId": "",
+    "enodeBId": "",
+    "twanId": ""
+}]

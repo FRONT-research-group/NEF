@@ -3,10 +3,10 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 
 from app.routers import monitoring_event
-from app.config import Settings
 from app.dependencies import startup_db_handler,cleanup_db_handler
+from app.config import get_settings
 
-settings = Settings()
+settings = get_settings()
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):

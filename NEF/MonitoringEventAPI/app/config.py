@@ -1,6 +1,4 @@
-import os
 from pydantic_settings import BaseSettings
-
 
 class Settings(BaseSettings):
     host: str = "127.0.0.1"
@@ -11,4 +9,11 @@ class Settings(BaseSettings):
     mongo_db_ip: str | None = None
     mongo_db_port: int | None = None
     mongo_db_name: str | None = None
-    mongo_collection_name: str | None = None
+    mongo_location_collection_name: str
+    mongo_subscription_collection_name: str
+
+
+settings = Settings()
+
+def get_settings() -> Settings:
+    return settings
