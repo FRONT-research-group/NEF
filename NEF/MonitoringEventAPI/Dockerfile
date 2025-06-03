@@ -21,4 +21,4 @@ ENV LOG_FILENAME_PATH="${LOG_DIRECTORY_PATH}logger"
 
 EXPOSE 8000
 ENTRYPOINT ["uvicorn", "app.main:app"]
-CMD ["--host", "${HOST}", "--port", "${PORT}"]
+CMD ["--host", "0.0.0.0", "--port", "8000"]
