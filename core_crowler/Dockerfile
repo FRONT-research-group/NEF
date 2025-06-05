@@ -70,4 +70,4 @@ RUN chown -R ${USER} ${HOME}
 
 USER ${USER}
 
-CMD ["python", "-m", "core_crowler.runners.run_sim"]
+CMD ["python", "-m", "core_crowler.runners.run_loc_crowler"]
