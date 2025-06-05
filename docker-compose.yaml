@@ -43,27 +43,22 @@ services:
     networks:
       - nef-network
 
+  core_crowler:
+      build:
+        context: ./core_crowler
+      container_name: core_crowler
+      restart: unless-stopped
+      env_file: .env
+      depends_on:
+        mongodb:
+          condition: service_healthy
+      networks:
+        - nef-network
+      user: root
+      volumes:
+        - /var/run/docker.sock:/var/run/docker.sock
 
-#The backend service depends on the db service.(Batsis)
-  # backend:
-  #   build:
-  #     context: ./backend
-  #   container_name: backend
-  #   restart: unless-stopped
-  #   env_file: ./backend/.env
-  #   ports:
-  #     - "8000:8000"
-  #   depends_on:
-  #     db:
-  #       condition: service_healthy
-  #   healthcheck:
-  #     test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
-  #     interval: 10s
-  #     timeout: 5s
-  #     retries: 3
-  #     start_period: 10s
-  #   networks:
-  #     - nef-network
+
 
 volumes:
   db_data:

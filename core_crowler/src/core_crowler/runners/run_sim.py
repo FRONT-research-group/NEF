@@ -5,11 +5,12 @@ from core_crowler.cores.O5GS.location.log_parser import LogParser
 
 MONGO_USER = os.getenv("MONGO_USER", "admin")
 MONGO_PASS = os.getenv("MONGO_PASS", "secret")
-MONGO_HOST = os.getenv("MONGO_HOST", "db")
+MONGO_HOST = os.getenv("MONGO_HOST", "mongo")
 MONGO_PORT = os.getenv("MONGO_PORT", "27017")
+MONGO_DB_NAME = os.getenv("MONGO_DB_NAME", "amf_logs")
 LOG_FILE_PATH = os.getenv("LOG_FILE_PATH", "/data/threeUEs_amf_logs.txt")
 
-MONGO_URI = f"mongodb://{MONGO_USER}:{MONGO_PASS}@{MONGO_HOST}:{MONGO_PORT}"
+MONGO_URI = f"mongodb://{MONGO_HOST}:{MONGO_PORT}"
 
 # Logger setup
 logger = setup_logger(logger_name="amf_log_simulator")
@@ -17,7 +18,7 @@ logger = setup_logger(logger_name="amf_log_simulator")
 # Parser and simulator setup
 parser = LogParser(
     mongo_uri=MONGO_URI,
-    db_name=MONGO_HOST,
+    db_name=MONGO_DB_NAME,
     collection_name="ue_events"
 )
 
