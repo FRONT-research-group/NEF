@@ -1,4 +1,5 @@
 import asyncio, httpx
+from datetime import datetime
 from fastapi import status,HTTPException
 
 from app.utils.logger import get_app_logger
@@ -13,11 +14,19 @@ async def fetch_event_report(location_db_handler: DbDataHandler, imsi:str, curre
         await asyncio.sleep(rep_period)
 
     fetched_document = await location_db_handler.find_location_by_imsi(imsi)
-    location_info = parse_document_to_ue_location(fetched_document)
+    tuple_result_info = parse_document_to_ue_location(fetched_document)
+    event_time = tuple_result_info[0]
+    location_info = tuple_result_info[1]
 
-    return MonitoringEventReport(msisdn=imsi,locationInfo=location_info,monitoringType=MonitoringType.LOCATION_REPORTING)
+    return MonitoringEventReport(msisdn=imsi,locationInfo=location_info,monitoringType=MonitoringType.LOCATION_REPORTING,eventTime=event_time)
 
-def parse_document_to_ue_location(document: dict | None = None) -> LocationInfo:
+def mapper_msisdn_to_imsi():
+    pass
+
+def mapper_cell_id_to_polygon_shape_area():
+    pass
+
+def parse_document_to_ue_location(document: dict | None = None) -> tuple[datetime,LocationInfo]:
     if document is None:
           log.error("No event reports received from NEF.")
           raise HTTPException(
@@ -26,14 +35,26 @@ def parse_document_to_ue_location(document: dict | None = None) -> LocationInfo:
         )
     else:
         log.info(f"Fetched Docuement: {document}")
+        event_time = document["event_time"]
+        # age_of_location_info = document[]
         cell_id = document["cellId"]
         tac_id = document["trackingAreaId"]
         plmn_id = document["plmnId"]
         routing_aread_id = document["routingAreaId"]
         enodeb_id = document["enodeBId"]
         twan_id = document["twanId"]
+        # geographic_area = document["geo"]
 
-        return LocationInfo(cellId=cell_id,trackingAreaId=tac_id,enodeBId=enodeb_id,routingAreaId=routing_aread_id,twanId=twan_id,plmnId=plmn_id)
+        return (event_time,LocationInfo(cellId=cell_id,trackingAreaId=tac_id,enodeBId=enodeb_id,routingAreaId=routing_aread_id,twanId=twan_id,plmnId=plmn_id))
+    
+def transform_document_to_event_report(document: dict | None = None) -> MonitoringEventReport:
+    msisdn = document["msisdn"]
+    location_info = document["locationInfo"]
+    monitoring_type = document["monitoringType"]
+    event_time = document["eventTime"]
+
+    return MonitoringEventReport(msisdn=msisdn,locationInfo=location_info,monitoringType=monitoring_type,eventTime=event_time)
+
 
 def parse_and_tranform_document_from_db(documents: list) -> list[tuple[str,MonitoringEventSubscriptionRequest]]:
     subscriptions: list[tuple[str,MonitoringEventSubscriptionRequest]] = []

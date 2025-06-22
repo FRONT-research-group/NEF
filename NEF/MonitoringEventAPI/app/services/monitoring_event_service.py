@@ -3,10 +3,11 @@ import uuid, asyncio
 from collections import defaultdict
 from fastapi import status,HTTPException
 
-from app.utils.reports_and_notification_helper import fetch_event_report,create_monitoring_notification,send_notification,parse_and_tranform_document_from_db
+from app.utils.reports_and_notification_helper import fetch_event_report,create_monitoring_notification,send_notification,parse_and_tranform_document_from_db, transform_document_to_event_report
 from app.utils.logger import get_app_logger
 from app.utils.db_data_handler import DbDataHandler
 from app.utils.local_last_known_data import LocalLastKnownData
+from app.config import get_settings
 from app.schemas.monitoring_event import MonitoringEventSubscriptionRequest, MonitoringEventSubscriptionResponse, MonitoringEventReport, MonitoringType,LocationType
 
 subscriptions_db: dict[str,dict[str,MonitoringEventSubscriptionRequest]] = defaultdict(dict)
@@ -15,6 +16,8 @@ task_registry: dict[str,asyncio.Task] = {}
 log = get_app_logger()
 
 local_last_known_data = LocalLastKnownData()
+
+settings = get_settings()
 
 async def generate_event_report_and_send_notification(db_data_handler: DbDataHandler,callback_url:str,subscription_link:str, subscription_id:str, af_id: str, msisdn:str, max_num_reps:int, rep_period:int )->None:
     try:
@@ -53,7 +56,13 @@ async def register_subscription_pef_af(af_id: str, sub_req: MonitoringEventSubsc
 
         #immediate one time  monitoring request
         if(sub_req.locationType == LocationType.LAST_KNOWN):
-            return local_last_known_data.query(msisdn)
+            if settings.cache_in_mongo:
+                document_result = await db_data_handler.fetch_report_from_db_cache(msisdn)
+                fetched_event_report = transform_document_to_event_report(document_result)
+                log.info(f"Event Report fetched: {fetched_event_report}")
+                return fetched_event_report
+            else:
+                return local_last_known_data.query(msisdn)
         
         #one time and continuous monitoring request --> event configuration subscription
         await db_data_handler.register_subscription_in_db(af_id,new_subscription_id,sub_req.model_dump(mode="json"))

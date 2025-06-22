@@ -240,3 +240,41 @@
     "enodeBId": "",
     "twanId": ""
 }]
+
+
+
+
+
+{
+  "msisdn": "string",
+  "locationInfo": {
+    "cellId": "string",
+    "trackingAreaId": "string",
+    "plmnId": {
+      "mcc": "string",
+      "mnc": "string"
+    },
+    "geographicArea": {
+      "polygon": {
+        "point_list": {
+          "geographical_coords": [
+            {
+              "lon": 0,
+              "lat": 0
+            },
+            {
+              "lon": 0,
+              "lat": 0
+            },
+            {
+              "lon": 0,
+              "lat": 0
+            }
+          ]
+        }
+      }
+    }
+  },
+  "monitoringType": "LOCATION_REPORTING",
+  "eventTime": "2025-06-22T16:32:15.685Z"
+}

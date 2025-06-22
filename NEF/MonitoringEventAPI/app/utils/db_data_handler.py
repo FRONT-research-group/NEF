@@ -33,6 +33,10 @@ class DbDataHandler:
         self.collection = self.db[settings.mongo_location_collection_name]
         return await self.collection.find_one({"_id": imsi})
     
+    async def fetch_report_from_db_cache(self,imsi: str) -> dict | None:
+        self.collections = self.db[settings.cache_collection_name]
+        return await self.collection.find_one({"_id": imsi},projection={'_id': False})
+    
     async def register_subscription_in_db(self, af_id:str, subscription_id:str, monitoring_sub_req: dict) -> None:
         """Register a new subscription in database."""
         self.collection = self.db[settings.mongo_subscription_collection_name]
