@@ -4,7 +4,7 @@ services:
     image: mongo
     container_name: mongo
     ports:
-      - "27017:27017"
+      - "27018:27017"
     restart: no
     healthcheck:
       test: echo 'db.runCommand("ping").ok' | mongosh --quiet
