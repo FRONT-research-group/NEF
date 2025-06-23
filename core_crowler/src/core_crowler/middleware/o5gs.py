@@ -24,7 +24,8 @@ class O5GSMiddleware():
                 "plmnId": event["amf_info"]["guami"]["plmnId"], # TODO: Check if this is correct
                 "routingAreaId": None,
                 "enodeBId": None,
-                "twanId": None
+                "twanId": None,
+                "UELocationTimestamp": event["amf_info"]["ueLocation"]["nrLocation"]["ueLocationTimestamp"]
             }
             try:
                 self.mongo_collection.replace_one({"_id": event["_id"]}, refined_event, upsert=True)
