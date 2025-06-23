@@ -21,6 +21,14 @@ logger.info(
 logger.info(
     f"MongoDB Subscription Collection Name: {settings.mongo_subscription_collection_name}"
 )
+logger.info(f"Cache in MongoDB: {settings.cache_in_mongo}")
+logger.info(f"Cache Collection Name: {settings.cache_collection_name}")
+logger.info(
+    f"Map MSISDN to IMSI Collection Name: {settings.map_msisdn_imsi_collection_name}"
+)
+logger.info(
+    f"Map Cell ID to Polygon Collection Name: {settings.map_cellId_to_polygon_collection_name}"
+)
 
 
 @asynccontextmanager

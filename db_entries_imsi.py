@@ -1,27 +1,24 @@
-from pymongo import AsyncMongoClient
+from pymongo import MongoClient
  
 # MongoDB connection
-client = AsyncMongoClient("mongodb://mongo:27017/")
+client = MongoClient("mongodb://0.0.0.0:27018/")
 db = client["amf_logs"]
 collection = db["imsi_to_phone_number"]
  
-# Optional: clear old test data
 collection.delete_many({})
- 
-# Sample entries
+
+#_id as imsi
 mappings = [
     {
-        "imsi": "imsi-123456789012345",
-        "phoneNumber": "+306912345678"
+        "_id": "001010143245445",
+        "msisdn": "306912345678"
     },
     {
-        "imsi": "imsi-987654321098765",
-        "phoneNumber": "+306911112222"
+        "_id": "987654321098765",
+        "msisdn": "306911112222"
     }
 ]
  
-# Insert into DB
 result = collection.insert_many(mappings)
- 
-# Log με την δική σου method
+client.close()
 print(f"Inserted {len(result.inserted_ids)} mappings.")

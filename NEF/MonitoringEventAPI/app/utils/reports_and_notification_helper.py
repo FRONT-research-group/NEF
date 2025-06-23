@@ -4,7 +4,7 @@ from fastapi import status,HTTPException
 
 from app.utils.logger import get_app_logger
 from app.utils.db_data_handler import DbDataHandler
-from app.schemas.monitoring_event import MonitoringEventReport, MonitoringType,MonitoringNotification,LocationInfo,MonitoringEventSubscriptionRequest
+from app.schemas.monitoring_event import MonitoringEventReport, MonitoringType,MonitoringNotification,LocationInfo,MonitoringEventSubscriptionRequest,GeographicArea
 
 log = get_app_logger()
 
@@ -20,11 +20,16 @@ async def fetch_event_report(location_db_handler: DbDataHandler, imsi:str, curre
 
     return MonitoringEventReport(msisdn=imsi,locationInfo=location_info,monitoringType=MonitoringType.LOCATION_REPORTING,eventTime=event_time)
 
-def mapper_msisdn_to_imsi():
-    pass
+async def mapper_msisdn_to_imsi(db_data_handler: DbDataHandler, msisdn: str) -> str:
+    log.info(f"MSISDN {msisdn}")
+    fetched_imsi = await db_data_handler.fetch_mapping_from_msisdn_to_imsi(msisdn)
+    log.info(f"Fetched IMSI {fetched_imsi}")
+    return fetched_imsi
 
-def mapper_cell_id_to_polygon_shape_area():
-    pass
+async def mapper_cell_id_to_polygon_shape_area(db_data_handler: DbDataHandler, cell_id : str) -> GeographicArea:
+    fetched_area = await db_data_handler.fetch_mapping_from_cell_id_to_polygon(cell_id)
+    log.info(f"Fetched geographic area {fetched_area}")
+    return GeographicArea(**fetched_area)
 
 def parse_document_to_ue_location(document: dict | None = None) -> tuple[datetime,LocationInfo]:
     if document is None:
@@ -35,7 +40,7 @@ def parse_document_to_ue_location(document: dict | None = None) -> tuple[datetim
         )
     else:
         log.info(f"Fetched Docuement: {document}")
-        event_time = document["eventTime"]
+        event_time = document["UELocationTimestamp"]
         # age_of_location_info = document[]
         cell_id = document["cellId"]
         tac_id = document["trackingAreaId"]

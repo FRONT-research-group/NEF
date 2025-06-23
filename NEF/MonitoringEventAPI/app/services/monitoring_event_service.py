@@ -3,7 +3,7 @@ import uuid, asyncio
 from collections import defaultdict
 from fastapi import status,HTTPException
 
-from app.utils.reports_and_notification_helper import fetch_event_report,create_monitoring_notification,send_notification,parse_and_tranform_document_from_db, transform_document_to_event_report
+from app.utils.reports_and_notification_helper import fetch_event_report,create_monitoring_notification,send_notification,parse_and_tranform_document_from_db, transform_document_to_event_report, mapper_msisdn_to_imsi
 from app.utils.logger import get_app_logger
 from app.utils.db_data_handler import DbDataHandler
 from app.utils.local_last_known_data import LocalLastKnownData
@@ -19,7 +19,7 @@ local_last_known_data = LocalLastKnownData()
 
 settings = get_settings()
 
-async def generate_event_report_and_send_notification(db_data_handler: DbDataHandler,callback_url:str,subscription_link:str, subscription_id:str, af_id: str, msisdn:str, max_num_reps:int, rep_period:int )->None:
+async def generate_event_report_and_send_notification(db_data_handler: DbDataHandler,callback_url:str,subscription_link:str, subscription_id:str, af_id: str, msisdn:str, max_num_reps:int, rep_period:int )-> None:
     try:
         for report_num in range(1,max_num_reps+1):
             event_report = await fetch_event_report(db_data_handler,msisdn,report_num,rep_period)
@@ -57,7 +57,9 @@ async def register_subscription_pef_af(af_id: str, sub_req: MonitoringEventSubsc
         #immediate one time  monitoring request
         if(sub_req.locationType == LocationType.LAST_KNOWN):
             if settings.cache_in_mongo:
-                document_result = await db_data_handler.fetch_report_from_db_cache(msisdn)
+                imsi = await mapper_msisdn_to_imsi(db_data_handler, msisdn)
+                document_result = await db_data_handler.fetch_report_from_db_cache(imsi)
+                log.info(f"Fetched report from cache {document_result}")
                 fetched_event_report = transform_document_to_event_report(document_result)
                 log.info(f"Event Report fetched: {fetched_event_report}")
                 return fetched_event_report
