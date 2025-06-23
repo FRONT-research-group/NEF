@@ -35,7 +35,7 @@ def parse_document_to_ue_location(document: dict | None = None) -> tuple[datetim
         )
     else:
         log.info(f"Fetched Docuement: {document}")
-        event_time = document["event_time"]
+        event_time = document["eventTime"]
         # age_of_location_info = document[]
         cell_id = document["cellId"]
         tac_id = document["trackingAreaId"]
