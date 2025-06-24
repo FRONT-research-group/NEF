@@ -9,6 +9,7 @@ collection.delete_many({})
 
 #_id as imsi
 report = [{
+  "_id" : "001010143245445",
   "msisdn": "306912345678",
   "locationInfo": {
     "cellId": "000000010",

@@ -59,7 +59,7 @@ async def register_subscription_pef_af(af_id: str, sub_req: MonitoringEventSubsc
             if settings.cache_in_mongo:
                 imsi = await mapper_msisdn_to_imsi(db_data_handler, msisdn)
                 document_result = await db_data_handler.fetch_report_from_db_cache(imsi)
-                log.info(f"Fetched report from cache {document_result}")
+                log.info(f"Fetched document from cache {document_result}")
                 fetched_event_report = transform_document_to_event_report(document_result)
                 log.info(f"Event Report fetched: {fetched_event_report}")
                 return fetched_event_report

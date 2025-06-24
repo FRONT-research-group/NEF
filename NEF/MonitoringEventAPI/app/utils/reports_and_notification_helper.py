@@ -22,7 +22,8 @@ async def fetch_event_report(location_db_handler: DbDataHandler, imsi:str, curre
 
 async def mapper_msisdn_to_imsi(db_data_handler: DbDataHandler, msisdn: str) -> str:
     log.info(f"MSISDN {msisdn}")
-    fetched_imsi = await db_data_handler.fetch_mapping_from_msisdn_to_imsi(msisdn)
+    fetched_document = await db_data_handler.fetch_mapping_from_msisdn_to_imsi(msisdn)
+    fetched_imsi = fetched_document.get("_id")
     log.info(f"Fetched IMSI {fetched_imsi}")
     return fetched_imsi
 
