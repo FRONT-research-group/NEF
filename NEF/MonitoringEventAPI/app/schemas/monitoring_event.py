@@ -21,20 +21,44 @@ class PlmnId(BaseModel):
 class DurationSec(BaseModel):
     duration: int = Field(0,description="Unsigned integer identifying a period of time in units of seconds")
 
+class DurationMin(BaseModel):
+    duration: int = Field(0,description="Unsigned integer identifying a period of time in units of minutes",ge=0)
+
 class LocationFailureCause(str,Enum):
     position_denied = "POSITIONING_DENIED" # Positioning is denied.
     unsupported_by_ue = "UNSUPPORTED_BY_UE" # Positioning is not supported by UE.
     not_registered_ue = "NOT_REGISTERED_UE" # UE is not registered.
     unspecified = "UNSPECIFIED" # Unspecified cause.
 
+
+# class SupportedGADShapes(str,Enum):
+#     point = "POINT" # Point shape
+#     point_uncertainty_circle = "POINT_UNCERTAINTY_CIRCLE"
+
+
+class GeographicalCoordinates(BaseModel):
+    lon: float = Field(..., description="Longitude coordinate.")
+    lat: float = Field(..., description="Latitude coordinate.")
+
+class PointList(BaseModel):
+    geographical_coords: list[GeographicalCoordinates] = Field(..., description="List of geographical coordinates defining the points.",min_length=3,max_length=15)
+
+class Polygon(BaseModel):
+    point_list: PointList = Field(..., description="List of points defining the polygon.")
+
+class GeographicArea(BaseModel):
+    polygon: Optional[Polygon] = Field(None, description="Identifies a polygonal geographic area.")
+
 #This data type represents the user location information which is sent from the NEF to the AF.
 class LocationInfo(BaseModel):
+    ageOfLocationInfo: DurationMin | None = Field(None,description="Indicates the elapsed time since the last network contact of the UE.")
     cellId: Optional[str] = Field(None, description="Cell ID where the UE is located.")
     trackingAreaId: Optional[str] = Field(None, description="TrackingArea ID where the UE is located.")
     enodeBId: Optional[str] = Field(None, description="eNodeB ID where the UE is located.")
     routingAreaId: Optional[str] = Field(None, description="Routing Area ID where the UE is located")
     plmnId: Optional[PlmnId] = Field(None, description="PLMN ID where the UE is located.")
     twanId: Optional[str] = Field(None, description="TWAN ID where the UE is located.")
+    geographicArea: GeographicArea | None = Field(None,description="Identifies a geographic area of the user where the UE is located.")
 
 #If locationType set to "LAST_KNOWN_LOCATION", the monitoring event request from AF shall be only for one-time monitoring request
 class LocationType(str,Enum):

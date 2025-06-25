@@ -1,68 +1,64 @@
-version: "3.8"
-
 services:
   # MongoDB service
-  db:
-    image: mongo:3.8 # image for mongoDB already exists we can ignore the build Dockerfile 
-    container_name: db
-    restart: unless-stopped
-    env_file: ./db/.env
-    volumes:
-      - db_data:/data/db
+  mongodb:
+    image: mongo
+    container_name: mongo
+    ports:
+      - "27018:27017"
+    restart: no
     healthcheck:
-      test: ["CMD", "mongo", "--eval", "db.adminCommand('ping')"]
-      interval: 10s
+      test: echo 'db.runCommand("ping").ok' | mongosh --quiet
+      interval: 5s
       timeout: 5s
       retries: 5
-      start_period: 10s
     networks:
       - nef-network
+
+  test-server:
+    image: python:3.12.10-slim
+    container_name: test_server
+    ports:
+      - "8001:8001"
+    volumes:
+      - ./NEF/MonitoringEventAPI/test_server.py:/test_server.py
+    restart: no
+    command: ["/bin/sh", "-c", "python test_server.py"]
+    networks:
+      - nef-network
+
 
 
   # The NEF service depends on the db and backend services.(Panagiwths kai Andreas)
   nef:
     build:
-      context: ./NEF
+      context: ./NEF/MonitoringEventAPI
     container_name: nef
     restart: unless-stopped
-    env_file: ./NEF/.env
-    ports:
-      - "8081:8081"
-    depends_on:
-      db:
-        condition: service_healthy
-      backend:
-        condition: service_healthy
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8081/health"]
-      interval: 10s
-      timeout: 5s
-      retries: 3
-      start_period: 10s
-    networks:
-      - nef-network
-
-
-#The backend service depends on the db service.(Batsis)
-  backend:
-    build:
-      context: ./backend
-    container_name: backend
-    restart: unless-stopped
-    env_file: ./backend/.env
+    env_file: .env
     ports:
       - "8000:8000"
     depends_on:
-      db:
+      mongodb:
         condition: service_healthy
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
-      interval: 10s
-      timeout: 5s
-      retries: 3
-      start_period: 10s
     networks:
       - nef-network
+
+  core_crowler:
+      build:
+        context: ./core_crowler
+      container_name: core_crowler
+      restart: unless-stopped
+      env_file: .env
+      depends_on:
+        mongodb:
+          condition: service_healthy
+      networks:
+        - nef-network
+      user: root
+      volumes:
+        - /var/run/docker.sock:/var/run/docker.sock
+
+
 
 volumes:
   db_data:

@@ -9,6 +9,10 @@ echo "MONGO_DB_PORT=27017" >> .env
 echo "MONGO_DB_NAME=amf_logs" >> .env
 echo "MONGO_LOCATION_COLLECTION_NAME=location_info" >> .env
 echo "MONGO_SUBSCRIPTION_COLLECTION_NAME=subscriptions" >> .env
+echo "CACHE_IN_MONGO=True" >> .env
+echo "CACHE_COLLECTION_NAME=cache_reports" >> .env
+echo "MAP_MSISDN_IMSI_COLLECTION_NAME=imsi_to_phone_number" >> .env
+echo "MAP_CELLID_TO_POLYGON_COLLECTION_NAME=cell_to_polygons" >> .env
 
 
        
