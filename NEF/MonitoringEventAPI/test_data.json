@@ -73,7 +73,18 @@ Dockerized version of requestsBody
   ]
 }
 
-
+{
+  "accuracy": "CGI_ECGI",
+  "msisdn": "306912345678",
+  "notificationDestination": "http://test_server:8001",
+  "monitoringType": "LOCATION_REPORTING",
+  "maximumNumberOfReports": 3,
+  "monitorExpireTime": "2025-04-11T07:18:26.978Z",
+  "locationType": "LAST_KNOWN_LOCATION",
+  "repPeriod": {
+    "duration": 20
+  }
+}
 
 
 [
