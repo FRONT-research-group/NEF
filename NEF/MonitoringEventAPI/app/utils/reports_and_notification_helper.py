@@ -52,28 +52,40 @@ def parse_document_to_ue_location(document: dict | None = None) -> tuple[datetim
         # geographic_area = document["geo"]
 
         return (event_time,LocationInfo(cellId=cell_id,trackingAreaId=tac_id,enodeBId=enodeb_id,routingAreaId=routing_aread_id,twanId=twan_id,plmnId=plmn_id))
-    
-def transform_document_to_event_report(document: dict | None = None) -> MonitoringEventReport:
-    msisdn = document["msisdn"]
-    location_info = document["locationInfo"]
-    monitoring_type = document["monitoringType"]
-    event_time = document["eventTime"]
 
-    return MonitoringEventReport(msisdn=msisdn,locationInfo=location_info,monitoringType=monitoring_type,eventTime=event_time)
+def transform_cached_document_to_event_report(document: dict | None = None) -> MonitoringEventReport:
+    if document is None:
+        log.error("No document provided for event report transformation.")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="No event report document found"
+        )
+    try:
+        msisdn = document["msisdn"]
+        location_info = document["locationInfo"]
+        monitoring_type = document["monitoringType"]
+        event_time = document["eventTime"]
+        return MonitoringEventReport(
+            msisdn=msisdn,
+            locationInfo=location_info,
+            monitoringType=monitoring_type,
+            eventTime=event_time
+        )
+    except KeyError as exc:
+        log.error(f"Missing key in document: {exc}", exc_info=exc)
+        raise
 
-
-def parse_and_tranform_document_from_db(documents: list) -> list[tuple[str,MonitoringEventSubscriptionRequest]]:
-    subscriptions: list[tuple[str,MonitoringEventSubscriptionRequest]] = []
+def parse_and_transform_document_from_db(documents: list[dict]) -> list[tuple[str, MonitoringEventSubscriptionRequest]]:
+    subscriptions: list[tuple[str, MonitoringEventSubscriptionRequest]] = []
     for doc in documents:
         try:
             subscription_id = doc["_id"]
             monitoring_event_subscription = doc["monitoringEventSubscription"]
             fetched_subscription = MonitoringEventSubscriptionRequest(**monitoring_event_subscription)
-            subscriptions.append((subscription_id,fetched_subscription))
+            subscriptions.append((subscription_id, fetched_subscription))
         except Exception as exc:
-            log.error("Error tranfsorming document", exc_info=exc)
-    log.info(f"the documents that converted to subs are {subscriptions}")
-
+            log.error("Error transforming document", exc_info=exc)
+    log.info(f"Converted documents to subscriptions: {subscriptions}")
     return subscriptions
 
 def create_monitoring_notification(subscription_link: str, event_report: list[MonitoringEventReport]) -> MonitoringNotification:
@@ -82,12 +94,14 @@ def create_monitoring_notification(subscription_link: str, event_report: list[Mo
 
 async def send_notification(callback_url: str, monitoring_notification: MonitoringNotification) -> None:
     async with httpx.AsyncClient() as client:
-            log.info(f"Monitoring Notification: {monitoring_notification}")
-            try:
-                result = await client.post(callback_url, json=monitoring_notification.model_dump_json())
-                if result.status_code == status.HTTP_204_NO_CONTENT:
-                    log.info("Response received successfully")
-                else:
-                    log.info("Response unrecognizable")
-            except httpx.TimeoutException as exc:
-                log.error("Error in sending callback information from NEF",exc_info=exc)
+        log.info(f"Sending Monitoring Notification: {monitoring_notification}")
+        try:
+            result = await client.post(callback_url, json=monitoring_notification.model_dump())
+            if result.status_code == status.HTTP_204_NO_CONTENT:
+                log.info("Notification sent successfully")
+            else:
+                log.warning(f"Unexpected response status: {result.status_code}")
+        except httpx.TimeoutException as exc:
+            log.error("Timeout sending callback information from NEF", exc_info=exc)
+        except httpx.RequestError as exc:
+            log.error("Request error sending callback information from NEF", exc_info=exc)

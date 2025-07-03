@@ -3,7 +3,7 @@ import uuid, asyncio
 from collections import defaultdict
 from fastapi import status,HTTPException
 
-from app.utils.reports_and_notification_helper import fetch_event_report,create_monitoring_notification,send_notification,parse_and_tranform_document_from_db, transform_document_to_event_report, mapper_msisdn_to_imsi
+from app.utils.reports_and_notification_helper import fetch_event_report,create_monitoring_notification,send_notification,parse_and_transform_document_from_db, transform_cached_document_to_event_report, mapper_msisdn_to_imsi
 from app.utils.logger import get_app_logger
 from app.utils.db_data_handler import DbDataHandler
 from app.utils.local_last_known_data import LocalLastKnownData
@@ -60,7 +60,7 @@ async def register_subscription_pef_af(af_id: str, sub_req: MonitoringEventSubsc
                 imsi = await mapper_msisdn_to_imsi(db_data_handler, msisdn)
                 document_result = await db_data_handler.fetch_report_from_db_cache(imsi)
                 log.info(f"Fetched document from cache {document_result}")
-                fetched_event_report = transform_document_to_event_report(document_result)
+                fetched_event_report = transform_cached_document_to_event_report(document_result)
                 log.info(f"Event Report fetched: {fetched_event_report}")
                 return fetched_event_report
             else:
@@ -81,7 +81,7 @@ async def register_subscription_pef_af(af_id: str, sub_req: MonitoringEventSubsc
 async def get_subscriptions_per_af(af_id: str, request_url: str, db_data_handler: DbDataHandler) -> list[MonitoringEventSubscriptionResponse]:
     subscriptions_by_af_id = []
     fetched_subscriptions = await db_data_handler.fetch_subscriptions_for_af_id(af_id)
-    formatted_subs = parse_and_tranform_document_from_db(fetched_subscriptions)
+    formatted_subs = parse_and_transform_document_from_db(fetched_subscriptions)
 
     if formatted_subs is None:
         log.info("No subscriptions found for this AF")
