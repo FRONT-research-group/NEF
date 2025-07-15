@@ -20,9 +20,11 @@ async def fetch_event_report(location_db_handler: DbDataHandler, imsi:str, curre
 
     return MonitoringEventReport(msisdn=imsi,locationInfo=location_info,monitoringType=MonitoringType.LOCATION_REPORTING,eventTime=event_time)
 
-async def mapper_msisdn_to_imsi(db_data_handler: DbDataHandler, msisdn: str) -> str:
+async def mapper_msisdn_to_imsi(db_data_handler: DbDataHandler, msisdn: str) -> str | None:
     log.info(f"MSISDN {msisdn}")
     fetched_document = await db_data_handler.fetch_mapping_from_msisdn_to_imsi(msisdn)
+    if fetched_document is None:
+        return None
     fetched_imsi = fetched_document.get("_id")
     log.info(f"Fetched IMSI {fetched_imsi}")
     return fetched_imsi
