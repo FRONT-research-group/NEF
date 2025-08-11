@@ -23,10 +23,6 @@ cd NEF
    `docker compose up --build`
 2. The service will be available at `http://localhost:8080`
 
-## API Documentation
-The **Camara Location Retrieval API** is documented in the [openAPI spec](https://github.com/FRONT-research-group/CamaraLocationRetrieval/blob/implement_camara_api_2/location_retrieval_openapi.yaml).\
-Supported Error Types: 400 BAD REQUEST, 404 DEVICE IDENTIFIER NOT FOUND
-
 ## Configuration
 Environment variables can be set in `.env` for Docker Compose.
 
