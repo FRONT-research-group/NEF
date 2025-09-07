@@ -1,44 +1,4 @@
-{
-  "accuracy": "CGI_ECGI",
-  "msisdn": "001010143245445",
-  "notificationDestination": "http://test_server:8001",
-  "monitoringType": "LOCATION_REPORTING",
-  "maximumNumberOfReports": 3,
-  "monitorExpireTime": "2025-04-11T07:18:26.978Z",
-  "locationType": "CURRENT_LOCATION",
-  "repPeriod": {
-    "duration": 20
-  }
-}
-
-{
-  "accuracy": "CGI_ECGI",
-  "msisdn": "001010143245446",
-  "notificationDestination": "http://test_server:8001",
-  "monitoringType": "LOCATION_REPORTING",
-  "maximumNumberOfReports": 3,
-  "monitorExpireTime": "2025-04-11T07:18:26.978Z",
-  "locationType": "CURRENT_LOCATION",
-  "repPeriod": {
-    "duration": 20
-  }
-}
-
-
-{
-  "accuracy": "CGI_ECGI",
-  "msisdn": "001010143245447",
-  "notificationDestination": "http://test_server:8001",
-  "monitoringType": "LOCATION_REPORTING",
-  "maximumNumberOfReports": 3,
-  "monitorExpireTime": "2025-04-11T07:18:26.978Z",
-  "locationType": "CURRENT_LOCATION",
-  "repPeriod": {
-    "duration": 20
-  }
-}
-
-#model_config = SettingsConfigDict(env_file=os.path.join(os.path.dirname(os.path.dirname(__file__)),"app",".env"))
+#### AMF registered logs for UE equipment #######
 
 [{
     "_id": "001010143245445",
@@ -194,15 +154,7 @@
     }
   }]
 
-
-
-
-
-
-
-
-
-
+####Dummy Location Info ##########
 
 [{
     "_id": "001010143245445",
@@ -214,7 +166,31 @@
     },
     "routingAreaId": "",
     "enodeBId": "",
-    "twanId": ""
+    "twanId": "",
+    "geographicArea": {
+      "polygon": {
+        "point_list": {
+          "geographical_coords": [
+            {
+              "lon": 23.7275,
+              "lat": 37.9838
+            },
+            {
+              "lon": 23.75,
+              "lat": 37.98
+            },
+            {
+              "lon": 23.73,
+              "lat": 37.97
+            },
+            {
+              "lon": 23.71,
+              "lat": 37.975
+            }
+          ]
+        }
+      }
+    }
 },
 {
     "_id": "001010143245446",
@@ -226,7 +202,31 @@
     },
     "routingAreaId": "",
     "enodeBId": "",
-    "twanId": ""
+    "twanId": "",
+    "geographicArea": {
+      "polygon": {
+        "point_list": {
+          "geographical_coords": [
+            {
+              "lon": 23.7275,
+              "lat": 37.9838
+            },
+            {
+              "lon": 23.75,
+              "lat": 37.98
+            },
+            {
+              "lon": 23.73,
+              "lat": 37.97
+            },
+            {
+              "lon": 23.71,
+              "lat": 37.975
+            }
+          ]
+        }
+      }
+    }
 },
 {
     "_id": "001010143245447",
@@ -238,46 +238,32 @@
     },
     "routingAreaId": "",
     "enodeBId": "",
-    "twanId": ""
-}]
-
-
-
-
-
-{
-  "msisdn": "string",
-  "locationInfo": {
-    "cellId": "string",
-    "trackingAreaId": "string",
-    "plmnId": {
-      "mcc": "string",
-      "mnc": "string"
-    },
+    "twanId": "",
     "geographicArea": {
       "polygon": {
         "point_list": {
           "geographical_coords": [
             {
-              "lon": 0,
-              "lat": 0
+              "lon": 23.7275,
+              "lat": 37.9838
             },
             {
-              "lon": 0,
-              "lat": 0
+              "lon": 23.75,
+              "lat": 37.98
             },
             {
-              "lon": 0,
-              "lat": 0
+              "lon": 23.73,
+              "lat": 37.97
+            },
+            {
+              "lon": 23.71,
+              "lat": 37.975
             }
           ]
         }
       }
     }
-  },
-  "monitoringType": "LOCATION_REPORTING",
-  "eventTime": "2025-06-22T16:32:15.685Z"
-}
+}]
 
 
 

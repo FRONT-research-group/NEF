@@ -20,7 +20,7 @@ services:
     ports:
       - "8001:8001"
     volumes:
-      - ./NEF/MonitoringEventAPI/test_server.py:/test_server.py
+      - ./MonitoringEventAPI/test_server.py:/test_server.py
     restart: no
     command: ["/bin/sh", "-c", "python test_server.py"]
     networks:
@@ -31,7 +31,7 @@ services:
   # The NEF service depends on the db and backend services.(Panagiwths kai Andreas)
   nef:
     build:
-      context: ./NEF/MonitoringEventAPI
+      context: ./MonitoringEventAPI
     container_name: nef
     restart: unless-stopped
     env_file: .env

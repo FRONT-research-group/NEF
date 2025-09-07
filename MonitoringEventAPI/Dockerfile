@@ -3,6 +3,7 @@ FROM python:3.12.10-slim
 WORKDIR /
 
 COPY requirements.txt ./app/
+COPY ./certs/capif_cert_server.pem ./app/certs/capif_cert_server.pem
 
 #COPY outbound-cert-2024.crt /usr/local/share/ca-certificates
 

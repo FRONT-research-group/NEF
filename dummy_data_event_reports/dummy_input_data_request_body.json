@@ -1,0 +1,54 @@
+[
+  {
+    "requestsBody": [
+      {
+        "accuracy": "CGI_ECGI",
+        "msisdn": "001010143245445",
+        "notificationDestination": "http://test_server:8001",
+        "monitoringType": "LOCATION_REPORTING",
+        "maximumNumberOfReports": 3,
+        "monitorExpireTime": "2025-04-11T07:18:26.978Z",
+        "locationType": "CURRENT_LOCATION",
+        "repPeriod": {
+          "duration": 20
+        }
+      },
+      {
+        "accuracy": "CGI_ECGI",
+        "msisdn": "001010143245446",
+        "notificationDestination": "http://test_server:8001",
+        "monitoringType": "LOCATION_REPORTING",
+        "maximumNumberOfReports": 3,
+        "monitorExpireTime": "2025-04-11T07:18:26.978Z",
+        "locationType": "CURRENT_LOCATION",
+        "repPeriod": {
+          "duration": 20
+        }
+      },
+      {
+        "accuracy": "CGI_ECGI",
+        "msisdn": "001010143245447",
+        "notificationDestination": "http://test_server:8001",
+        "monitoringType": "LOCATION_REPORTING",
+        "maximumNumberOfReports": 3,
+        "monitorExpireTime": "2025-04-11T07:18:26.978Z",
+        "locationType": "CURRENT_LOCATION",
+        "repPeriod": {
+          "duration": 20
+        }
+      }
+    ]
+  },
+  {
+    "accuracy": "CGI_ECGI",
+    "msisdn": "306912345678",
+    "notificationDestination": "http://test_server:8001",
+    "monitoringType": "LOCATION_REPORTING",
+    "maximumNumberOfReports": 3,
+    "monitorExpireTime": "2025-04-11T07:18:26.978Z",
+    "locationType": "LAST_KNOWN_LOCATION",
+    "repPeriod": {
+      "duration": 20
+    }
+  }
+]
