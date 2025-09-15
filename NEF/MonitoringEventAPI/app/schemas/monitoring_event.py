@@ -7,6 +7,9 @@ from pydantic import BaseModel, Field, IPvAnyAddress, AnyHttpUrl
 #{apiRoot}/3gpp-monitoring-event/v1
 #Applicability location notification NEF northbound API feature, e.g. Location Reporting Monitor Type
 
+class ErrorResponse(BaseModel):
+    detail: str = Field(..., description="Error details")
+
 #The enumeration Accuracy represents a desired granularity of accuracy of the requested location information.
 class Accuracy(str,Enum):
     cgi_ecgi = "CGI_ECGI" # The AF requests to be notified using cell level location accuracy.

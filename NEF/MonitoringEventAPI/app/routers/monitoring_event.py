@@ -3,7 +3,7 @@ from typing import Any
 from fastapi import APIRouter, Response, status, Request, Depends
 
 from app.utils.db_data_handler import DbDataHandler
-from app.schemas.monitoring_event import MonitoringEventSubscriptionRequest, MonitoringEventSubscriptionResponse, MonitoringEventReport,MonitoringNotification,MonitoringNotificationResponse
+from app.schemas.monitoring_event import MonitoringEventSubscriptionRequest, MonitoringEventSubscriptionResponse, MonitoringEventReport,MonitoringNotification,MonitoringNotificationResponse, ErrorResponse
 
 from app.services import monitoring_event_service as sub_service
 
@@ -20,7 +20,8 @@ async def send_notification(callback_url: str, monitoring_notification: Monitori
 @router.get("/{scsAsId}/subscriptions",
             description="Read all of the active subscriptions for the AF",
             tags=["MonitoringEvent API AF level GET Operation"], 
-            response_model= list[MonitoringEventSubscriptionResponse],
+            responses={status.HTTP_200_OK:{"model":list[MonitoringEventSubscriptionResponse], "description": "200 OK"},
+                       status.HTTP_404_NOT_FOUND: { "model": ErrorResponse,"description":"404 Not Found"}},
             response_model_exclude_defaults=True)
 async def get_subscriptions(scsAsId: str, request: Request, db_data_handler: DbDataHandler = Depends(get_db_data_handler)) -> list[MonitoringEventSubscriptionResponse]:
     return await sub_service.get_subscriptions_per_af(scsAsId, str(request.url), db_data_handler)
@@ -30,7 +31,9 @@ async def get_subscriptions(scsAsId: str, request: Request, db_data_handler: DbD
         description="Creates a new subscription resource for monitoring event notification",
         tags=["MonitoringEvent API Subscription level POST Operation"],
         responses={status.HTTP_200_OK:{"model":MonitoringEventReport, "description": "200 OK"},
-                   status.HTTP_201_CREATED: {"model":MonitoringEventSubscriptionResponse, "description":"201 Created"}},
+                   status.HTTP_201_CREATED: {"model":MonitoringEventSubscriptionResponse, "description":"201 Created"},
+                   status.HTTP_400_BAD_REQUEST: {"model": ErrorResponse,"description":"400 Bad Request"},
+                   status.HTTP_404_NOT_FOUND: {"model": ErrorResponse,"description":"404 Not Found"}},
         response_model_exclude_unset=True,
         callbacks=invoices_callback_router.routes)
 async def create_subscription(request: Request, scsAsId: str, sub_req: MonitoringEventSubscriptionRequest, response: Response, db_data_handler: DbDataHandler = Depends(get_db_data_handler)) -> MonitoringEventReport | MonitoringEventSubscriptionResponse:
@@ -46,7 +49,8 @@ async def create_subscription(request: Request, scsAsId: str, sub_req: Monitorin
 @router.get("/{scsAsId}/subscriptions/{subscriptionId}",
             description="Read an active subscriptions for the AF and the subscription Id",
             tags=["MonitoringEvent API Subscription level GET Operation"], 
-            response_model=MonitoringEventSubscriptionResponse, 
+            responses={status.HTTP_200_OK:{"model":MonitoringEventSubscriptionResponse, "description": "200 OK"},
+                       status.HTTP_404_NOT_FOUND: {"model": ErrorResponse,"description":"404 Not Found"}},
             response_model_exclude_unset=True)
 async def get_subscription_by_id(scsAsId:str, subscriptionId:str, request: Request, db_data_handler: DbDataHandler = Depends(get_db_data_handler)) -> MonitoringEventSubscriptionResponse:
     return await sub_service.get_subscription_per_sub_id(scsAsId, subscriptionId, str(request.url), db_data_handler)
@@ -65,7 +69,8 @@ async def modify_subscription_by_id(scsAsId:str, subscriptionId: str) -> Any:
                description="Deletes an already existing monitoring event subscription",
                tags=["MonitoringEvent API Subscription level DELETE Operation"],
                responses={status.HTTP_200_OK:{"model":list[MonitoringEventReport], "description": "200 OK"},
-                          status.HTTP_204_NO_CONTENT: {"description":"204 No Content"}},
+                          status.HTTP_204_NO_CONTENT: {"description":"204 No Content"},
+                          status.HTTP_404_NOT_FOUND: {"model": ErrorResponse,"description":"404 Not Found"}},
                response_model_exclude_unset=True)
 async def delete_subscription_by_id(scsAsId:str, subscriptionId: str, response:Response, db_data_handler: DbDataHandler = Depends(get_db_data_handler)) -> MonitoringEventReport | None:
     result = await sub_service.delete_subscription_by_sub_id(scsAsId, subscriptionId, db_data_handler)
