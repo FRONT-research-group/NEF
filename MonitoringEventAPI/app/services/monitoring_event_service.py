@@ -26,16 +26,16 @@ async def generate_event_report_and_send_notification(db_data_handler: DbDataHan
             local_last_known_data.add(msisdn,event_report)
             monitoring_notification = create_monitoring_notification(subscription_link,[event_report])
             if(report_num == max_num_reps):
-                log.info(f"This is the last notification for IMSI {msisdn}")
+                log.info("This is the last notification for IMSI %s",msisdn)
                 monitoring_notification.cancelInd = True
             await send_notification(callback_url,monitoring_notification)
     except asyncio.CancelledError:
-        log.info(f"task has canceled for subscription {subscription_id}")
+        log.info("task has canceled for subscription %s",subscription_id)
     finally:
         await db_data_handler.delete_unique_subscription_for_af_id(af_id,subscription_id)
-        log.info(f"Subscription {subscription_id} deleted")
+        log.info("Subscription %s deleted",subscription_id)
         task_registry.pop(subscription_id)
-        log.info(f"Task registry: {task_registry}")
+        log.info("Task registry: %s",task_registry)
         
 
 async def register_subscription_pef_af(af_id: str, sub_req: MonitoringEventSubscriptionRequest, request_url: str,db_data_handler: DbDataHandler)-> MonitoringEventReport | MonitoringEventSubscriptionResponse :    
@@ -46,31 +46,31 @@ async def register_subscription_pef_af(af_id: str, sub_req: MonitoringEventSubsc
             detail="Check monitoringType and locationType"
         )
     else:
-        new_subscription_id = str(uuid.uuid4())
-
         msisdn = sub_req.msisdn
-
-        rep_period = None
-        if(sub_req.repPeriod is not None):
-            rep_period = sub_req.repPeriod.duration
 
         #immediate one time  monitoring request
         if(sub_req.locationType == LocationType.LAST_KNOWN):
             if settings.cache_in_mongo:
-                imsi = await mapper_msisdn_to_imsi(db_data_handler, msisdn)
+                imsi = await mapper_msisdn_to_imsi(db_data_handler, msisdn, af_id)
                 if imsi is None:
-                    log.error(f"IMSI not found for MSISDN {msisdn}")
+                    log.error("IMSI not found for MSISDN %s and AF ID %s",msisdn,af_id)
                     raise HTTPException(
                         status_code=status.HTTP_404_NOT_FOUND,
-                        detail="IMSI not found for the given MSISDN"
+                        detail="IMSI not found for the given MSISDN and AF ID"
                     )
                 document_result = await db_data_handler.fetch_report_from_db_cache(imsi)
-                log.info(f"Fetched document from cache {document_result}")
+                log.info("Fetched document from cache %s",document_result)
                 fetched_event_report = transform_document_to_event_report(document_result)
-                log.info(f"Event Report fetched: {fetched_event_report}")
+                log.info("Event Report fetched: %s",fetched_event_report)
                 return fetched_event_report
             else:
                 return local_last_known_data.query(msisdn)
+            
+        new_subscription_id = str(uuid.uuid4())
+
+        rep_period = None
+        if(sub_req.repPeriod is not None):
+            rep_period = sub_req.repPeriod.duration
         
         #one time and continuous monitoring request --> event configuration subscription
         await db_data_handler.register_subscription_in_db(af_id,new_subscription_id,sub_req.model_dump(mode="json"))
@@ -81,7 +81,7 @@ async def register_subscription_pef_af(af_id: str, sub_req: MonitoringEventSubsc
 
         task = asyncio.create_task(generate_event_report_and_send_notification(db_data_handler,callback_url=str(sub_req.notificationDestination),subscription_link=created_resource_url,subscription_id=new_subscription_id,af_id=af_id,msisdn=msisdn,max_num_reps=max_num_reps,rep_period=rep_period))
         task_registry[new_subscription_id] = task
-        log.info(f"Response sent for AF POST request with IMSI {msisdn}")
+        log.info("Response sent for AF POST request with IMSI %s",msisdn)
         return sub_req.to_response(self_link=created_resource_url)
 
 async def get_subscriptions_per_af(af_id: str, request_url: str, db_data_handler: DbDataHandler) -> list[MonitoringEventSubscriptionResponse]:
@@ -99,7 +99,7 @@ async def get_subscriptions_per_af(af_id: str, request_url: str, db_data_handler
         for subscription in formatted_subs:
             resource_url_path= f"{request_url}/{subscription[0]}"
             subscriptions_by_af_id.append(subscription[1].to_response(self_link=resource_url_path))
-    log.info(f"subscriptions per af: {subscriptions_by_af_id}")
+    log.info("subscriptions per af: %s",subscriptions_by_af_id)
 
     return subscriptions_by_af_id
     
@@ -109,10 +109,10 @@ async def get_subscription_per_sub_id(af_id:str, subscription_id:str, request_ur
         monitoring_event_request = MonitoringEventSubscriptionRequest(**fetched_subscription["monitoringEventSubscription"])
         resource_url_path= f"{request_url}/{subscription_id}"     
         subscription_info = monitoring_event_request.to_response(self_link=resource_url_path)
-        log.info(f"subscription info: {subscription_info}")
+        log.info("subscription info: %s",subscription_info)
         return subscription_info
     else:
-        log.info(f"No subscription found for AF with id {af_id} with subscription_id {subscription_id}")
+        log.info("No subscription found for AF with id %s with subscription_id %s",af_id,subscription_id)
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="No subscription found for this AF"
@@ -120,16 +120,15 @@ async def get_subscription_per_sub_id(af_id:str, subscription_id:str, request_ur
 
 async def delete_subscription_by_sub_id(af_id: str, subscription_id: str, db_data_handler: DbDataHandler) -> MonitoringEventReport | None:
     fetched_subscription = await db_data_handler.fetch_unique_subscription_for_af_id(af_id,subscription_id)
-    log.info(f"The registry is {task_registry}")
+    log.info("The registry is %s",task_registry)
     if fetched_subscription is not None and subscription_id in task_registry:
-        log.info(f"Deleting subscription with id {subscription_id} for AF with id {af_id}")
+        log.info("Deleting subscription with id %s for AF with id %s",subscription_id,af_id)
         monitoring_event_request = MonitoringEventSubscriptionRequest(**fetched_subscription["monitoringEventSubscription"])
-        monitoring_event_request.msisdn
         imsi = monitoring_event_request.msisdn
         task_registry[subscription_id].cancel()
         return local_last_known_data.query(imsi)
     else:
-        log.info(f"No subscription found for AF with id {af_id} with subscription_id {subscription_id}")
+        log.info("No subscription found for AF with id %s with subscription_id %s",af_id,subscription_id)
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="No subscription matched"

@@ -26,8 +26,6 @@ services:
     networks:
       - nef-network
 
-
-
   # The NEF service depends on the db and backend services.(Panagiwths kai Andreas)
   nef:
     build:
@@ -42,6 +40,7 @@ services:
         condition: service_healthy
     networks:
       - nef-network
+      - shared
 
   core_crowler:
       build:
@@ -58,11 +57,11 @@ services:
       volumes:
         - /var/run/docker.sock:/var/run/docker.sock
 
-
-
 volumes:
   db_data:
 
 networks:
   nef-network:
     driver: bridge
+  shared:
+    external: true
