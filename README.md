@@ -15,13 +15,20 @@ Docker and Docker compose
 ```
 git clone https://github.com/FRONT-research-group/NEF.git
 cd NEF
+git checkout integrate_security
 ```
+after fetching from origin.
 
 ## Deployment
-### Docker Compose
-1. Build and start service:
-   `docker compose up --build`
-2. The service will be available at `http://localhost:8080`
+### Make target
+1. `make deploy`
+2. The service will be available at `http://localhost:8000`  
+3. For **Last_KNOWN_LOCATION** Feature run the `python db_entries_imsi.py` and `python db_entries_event_report.py` that are stored in the `/NEF/init_db_setup`.
+
+## How to Undeploy
+### Make target
+1. `make clean`
+2. If docker external network was not removed undeploy the resource that still uses the docker network called shared, and run again the `make clean` target.
 
 ## Configuration
 Environment variables can be set in `.env` for Docker Compose.
