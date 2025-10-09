@@ -91,7 +91,7 @@ Create a python `venv` and install `requirements.txt` to execute the `python scr
 | `GET`   | `/3gpp-monitoring-event/v1/{scsAsId}/subscriptions/{subscriptionId}`       | Read an active subscription for the AF and the subscription Id   |
 | `DELETE`| `/3gpp-monitoring-event/v1/{scsAsId}/subscriptions/{subscriptionId}`       | Deletes an already existing subscription                         |
 
-### Example Subscription POST Request
+### Example Subscription POST Request - CURRENT LOCATION
 ```
 {
   "accuracy": "CGI_ECGI",
@@ -103,6 +103,16 @@ Create a python `venv` and install `requirements.txt` to execute the `python scr
   "repPeriod": {
     "duration": 20
   }
+}
+```
+
+### Example Subscription POST Request - LAST KNOWN LOCATION
+```
+{
+  "msisdn": "001010143245445",
+  "notificationDestination": "http://test_server:8001",
+  "monitoringType": "LOCATION_REPORTING",
+  "locationType": "LAST_KNOWN_LOCATION",
 }
 ```
 
