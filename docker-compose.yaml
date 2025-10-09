@@ -30,6 +30,8 @@ services:
   nef:
     build:
       context: ./MonitoringEventAPI
+      args:
+        AUTH_ENABLED: ${AUTH_ENABLED}
     container_name: nef
     restart: unless-stopped
     env_file: .env
@@ -40,7 +42,7 @@ services:
         condition: service_healthy
     networks:
       - nef-network
-      - shared
+      #- shared
 
   core_crowler:
       build:
@@ -63,5 +65,5 @@ volumes:
 networks:
   nef-network:
     driver: bridge
-  shared:
-    external: true
+  # shared:
+  #   external: true

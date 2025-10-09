@@ -15,10 +15,17 @@ class Settings(BaseSettings):
     cache_collection_name: str | None
     map_msisdn_imsi_collection_name: str | None
     map_cellId_to_polygon_collection_name: str | None
-    PUB_KEY_PATH: str | None = None
-    ALGORITHM: str = "RS256"
+    auth_enabled: bool = True
+    pub_key_path: str | None = None
+    algorithm: str | None = "RS256"
 
 settings = Settings()
 
 def get_settings() -> Settings:
+    """
+    Retrieve the current application settings.
+
+    Returns:
+        Settings: An instance containing the application's configuration settings.
+    """
     return settings

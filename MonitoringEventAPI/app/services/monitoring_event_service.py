@@ -23,7 +23,7 @@ async def generate_event_report_and_send_notification(db_data_handler: DbDataHan
     try:
         for report_num in range(1,max_num_reps+1):
             event_report = await fetch_event_report(db_data_handler,msisdn,report_num,rep_period)
-            local_last_known_data.add(msisdn,event_report)
+            local_last_known_data.add(af_id,msisdn,event_report)
             monitoring_notification = create_monitoring_notification(subscription_link,[event_report])
             if(report_num == max_num_reps):
                 log.info("This is the last notification for IMSI %s",msisdn)
@@ -63,8 +63,7 @@ async def register_subscription_pef_af(af_id: str, sub_req: MonitoringEventSubsc
                 fetched_event_report = transform_document_to_event_report(document_result)
                 log.info("Event Report fetched: %s",fetched_event_report)
                 return fetched_event_report
-            else:
-                return local_last_known_data.query(msisdn)
+            return local_last_known_data.query(af_id,msisdn)
             
         new_subscription_id = str(uuid.uuid4())
 
@@ -126,7 +125,7 @@ async def delete_subscription_by_sub_id(af_id: str, subscription_id: str, db_dat
         monitoring_event_request = MonitoringEventSubscriptionRequest(**fetched_subscription["monitoringEventSubscription"])
         imsi = monitoring_event_request.msisdn
         task_registry[subscription_id].cancel()
-        return local_last_known_data.query(imsi)
+        return local_last_known_data.query(af_id,imsi)
     else:
         log.info("No subscription found for AF with id %s with subscription_id %s",af_id,subscription_id)
         raise HTTPException(

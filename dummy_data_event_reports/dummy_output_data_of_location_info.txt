@@ -158,6 +158,7 @@
 
 [{
     "_id": "001010143245445",
+    "UELocationTimestamp": "2025-04-08T13:06:42.904325Z",
     "cellId": "000000010",
     "trackingAreaId": "000001",
     "plmnId": {
@@ -194,6 +195,7 @@
 },
 {
     "_id": "001010143245446",
+    "UELocationTimestamp": "2025-04-08T13:06:42.904325Z",
     "cellId": "000000010",
     "trackingAreaId": "000001",
     "plmnId": {
@@ -230,6 +232,7 @@
 },
 {
     "_id": "001010143245447",
+    "UELocationTimestamp": "2025-04-08T13:06:42.904325Z",
     "cellId": "000000010",
     "trackingAreaId": "000001",
     "plmnId": {

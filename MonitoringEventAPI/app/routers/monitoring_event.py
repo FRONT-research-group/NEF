@@ -2,16 +2,16 @@ from typing import Any
 
 from fastapi import APIRouter, Response, status, Request, Depends
 
-from app.utils.db_data_handler import DbDataHandler
+from app.utils.db_data_handler import DbDataHandler, get_db_data_handler
 from app.schemas.monitoring_event import MonitoringEventSubscriptionRequest, MonitoringEventSubscriptionResponse, MonitoringEventReport,MonitoringNotification,MonitoringNotificationResponse
 
 from app.services import monitoring_event_service as sub_service
-
-from app.utils.db_data_handler import get_db_data_handler, DbDataHandler
-from app.auth import verify_token
+from app.auth import get_authentication_dependency
 
 router = APIRouter()
 invoices_callback_router = APIRouter()
+
+verify_token = get_authentication_dependency()
 
 @invoices_callback_router.post("{$request.body.notificationDestination}", description="No Content (successful notification)", response_model=MonitoringNotificationResponse)
 async def send_notification(callback_url: str, monitoring_notification: MonitoringNotification) -> None:
@@ -20,10 +20,12 @@ async def send_notification(callback_url: str, monitoring_notification: Monitori
 
 @router.get("/{scsAsId}/subscriptions",
             description="Read all of the active subscriptions for the AF",
-            tags=["MonitoringEvent API AF level GET Operation"], 
+            tags=["MonitoringEvent API AF level GET Operation"],
+            responses={status.HTTP_401_UNAUTHORIZED: {"description":"401 Unauthorized"}}, 
             response_model= list[MonitoringEventSubscriptionResponse],
-            response_model_exclude_defaults=True)
-async def get_subscriptions(scsAsId: str, request: Request, db_data_handler: DbDataHandler = Depends(get_db_data_handler), token=Depends(verify_token)) -> list[MonitoringEventSubscriptionResponse]:
+            response_model_exclude_defaults=True,
+            dependencies= [Depends(verify_token)])
+async def get_subscriptions(scsAsId: str, request: Request, db_data_handler: DbDataHandler = Depends(get_db_data_handler)) -> list[MonitoringEventSubscriptionResponse]:
     return await sub_service.get_subscriptions_per_af(scsAsId, str(request.url), db_data_handler)
 
 @router.post(
@@ -31,10 +33,12 @@ async def get_subscriptions(scsAsId: str, request: Request, db_data_handler: DbD
         description="Creates a new subscription resource for monitoring event notification",
         tags=["MonitoringEvent API Subscription level POST Operation"],
         responses={status.HTTP_200_OK:{"model":MonitoringEventReport, "description": "200 OK"},
-                   status.HTTP_201_CREATED: {"model":MonitoringEventSubscriptionResponse, "description":"201 Created"}},
+                   status.HTTP_201_CREATED: {"model":MonitoringEventSubscriptionResponse, "description":"201 Created"},
+                   status.HTTP_401_UNAUTHORIZED: {"description":"401 Unauthorized"}},
         response_model_exclude_unset=True,
-        callbacks=invoices_callback_router.routes)
-async def create_subscription(request: Request, scsAsId: str, sub_req: MonitoringEventSubscriptionRequest, response: Response, db_data_handler: DbDataHandler = Depends(get_db_data_handler),token=Depends(verify_token)) -> MonitoringEventReport | MonitoringEventSubscriptionResponse:
+        callbacks=invoices_callback_router.routes,
+        dependencies= [Depends(verify_token)])
+async def create_subscription(request: Request, scsAsId: str, sub_req: MonitoringEventSubscriptionRequest, response: Response, db_data_handler: DbDataHandler = Depends(get_db_data_handler)) -> MonitoringEventReport | MonitoringEventSubscriptionResponse:
     post_result = await sub_service.register_subscription_pef_af(scsAsId,sub_req,str(request.url),db_data_handler)
     if isinstance(post_result, MonitoringEventReport):
         response.status_code = status.HTTP_200_OK
@@ -47,9 +51,11 @@ async def create_subscription(request: Request, scsAsId: str, sub_req: Monitorin
 @router.get("/{scsAsId}/subscriptions/{subscriptionId}",
             description="Read an active subscriptions for the AF and the subscription Id",
             tags=["MonitoringEvent API Subscription level GET Operation"], 
+            responses={status.HTTP_401_UNAUTHORIZED: {"description":"401 Unauthorized"}},
             response_model=MonitoringEventSubscriptionResponse, 
-            response_model_exclude_unset=True)
-async def get_subscription_by_id(scsAsId:str, subscriptionId:str, request: Request, db_data_handler: DbDataHandler = Depends(get_db_data_handler), token=Depends(verify_token)) -> MonitoringEventSubscriptionResponse:
+            response_model_exclude_unset=True,
+            dependencies= [Depends(verify_token)])
+async def get_subscription_by_id(scsAsId:str, subscriptionId:str, request: Request, db_data_handler: DbDataHandler = Depends(get_db_data_handler)) -> MonitoringEventSubscriptionResponse:
     return await sub_service.get_subscription_per_sub_id(scsAsId, subscriptionId, str(request.url), db_data_handler)
 
 #Revisit put
@@ -66,9 +72,11 @@ async def modify_subscription_by_id(scsAsId:str, subscriptionId: str) -> Any:
                description="Deletes an already existing monitoring event subscription",
                tags=["MonitoringEvent API Subscription level DELETE Operation"],
                responses={status.HTTP_200_OK:{"model":list[MonitoringEventReport], "description": "200 OK"},
-                          status.HTTP_204_NO_CONTENT: {"description":"204 No Content"}},
-               response_model_exclude_unset=True)
-async def delete_subscription_by_id(scsAsId:str, subscriptionId: str, response:Response, db_data_handler: DbDataHandler = Depends(get_db_data_handler), token=Depends(verify_token)) -> MonitoringEventReport | None:
+                          status.HTTP_204_NO_CONTENT: {"description":"204 No Content"},
+                          status.HTTP_401_UNAUTHORIZED: {"description":"401 Unauthorized"}},
+               response_model_exclude_unset=True,
+               dependencies= [Depends(verify_token)])
+async def delete_subscription_by_id(scsAsId:str, subscriptionId: str, response:Response, db_data_handler: DbDataHandler = Depends(get_db_data_handler)) -> MonitoringEventReport | None:
     result = await sub_service.delete_subscription_by_sub_id(scsAsId, subscriptionId, db_data_handler)
     if result:
         response.status_code = status.HTTP_200_OK

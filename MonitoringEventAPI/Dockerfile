@@ -3,7 +3,6 @@ FROM python:3.12.10-bullseye
 WORKDIR /
 
 COPY requirements.txt ./app/
-COPY ./certs/capif_cert_server.pem ./app/certs/capif_cert_server.pem
 
 #TODO change root as user, security hardening
 RUN rm -rf /var/lib/apt/lists/* && \
@@ -12,6 +11,20 @@ RUN rm -rf /var/lib/apt/lists/* && \
     pip install --no-cache-dir -r ./app/requirements.txt
 
 COPY ./app /app
+
+ARG AUTH_ENABLED
+ENV AUTH_ENABLED=${AUTH_ENABLED}
+
+RUN if [ "$AUTH_ENABLED" = "True" ]; then \
+      echo "Copying CAPIF certificate..."; \
+      pwd; \
+      mkdir -p /app/certs; \
+      cd app && ls -la certs; \
+      ls -la; \
+    #   cp ./certs/capif_cert_server.pem ./app/certs/capif_cert_server.pem; \
+    else \
+      echo "Auth disabled: skipping certificate copy."; \
+    fi
 
 ENV HOST="127.0.0.1"
 ENV PORT="8080"
