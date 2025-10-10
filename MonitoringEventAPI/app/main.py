@@ -29,6 +29,10 @@ logger.info(
 logger.info(
     f"Map Cell ID to Polygon Collection Name: {settings.map_cellId_to_polygon_collection_name}"
 )
+logger.info(f"Auth Enabled: {settings.auth_enabled}")
+if settings.auth_enabled:
+    logger.info(f"Public Key Path: {settings.pub_key_path}")
+    logger.info(f"Algorithm: {settings.algorithm}")
 
 
 @asynccontextmanager

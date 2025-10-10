@@ -37,9 +37,9 @@ class DbDataHandler:
         self.collection = self.db[settings.cache_collection_name]
         return await self.collection.find_one({"_id": imsi},projection={'_id': False})
     
-    async def fetch_mapping_from_msisdn_to_imsi(self,msisdn: str) -> dict | None:
+    async def fetch_mapping_from_msisdn_to_imsi(self,msisdn: str, af_id: str) -> dict | None:
         self.collection = self.db[settings.map_msisdn_imsi_collection_name]
-        return await self.collection.find_one({"msisdn": msisdn},projection={'msisdn' : False})
+        return await self.collection.find_one({"msisdn": msisdn, "af_id": af_id},projection={'msisdn' : False, 'af_id': False})
     
     async def fetch_mapping_from_cell_id_to_polygon(self,cell_id: str) -> dict | None:
         self.collection = self.db[settings.map_cellId_to_polygon_collection_name]

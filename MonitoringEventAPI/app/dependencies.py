@@ -7,7 +7,6 @@ settings = get_settings()
 
 log = get_app_logger()
 
-
 async def startup_db_handler() -> None:
     log.info("Mongo's DB Client instantiation process begin")
     if settings.mongo_db_uri is not None:
