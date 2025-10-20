@@ -39,7 +39,7 @@ async def generate_event_report_and_send_notification(db_data_handler: DbDataHan
         
 
 async def register_subscription_pef_af(af_id: str, sub_req: MonitoringEventSubscriptionRequest, request_url: str,db_data_handler: DbDataHandler)-> MonitoringEventReport | MonitoringEventSubscriptionResponse :   
-    if (sub_req.monitoringType != MonitoringType.LOCATION_REPORTING) or (sub_req.monitoringType == MonitoringType.LOCATION_REPORTING and (sub_req.locationType is None)) or (sub_req.repPeriod is not None and sub_req.maximumNumberOfReports==1):
+    if (sub_req.monitoringType != MonitoringType.LOCATION_REPORTING) or (sub_req.monitoringType == MonitoringType.LOCATION_REPORTING and (sub_req.locationType is None)) or (sub_req.repPeriod is not None and sub_req.maximumNumberOfReports==1) or (sub_req.repPeriod is not None and sub_req.repPeriod.duration <=0) or (sub_req.maximumNumberOfReports is not None and sub_req.maximumNumberOfReports <=0) or (sub_req.locationType == LocationType.CURRENT_LOCATION and (sub_req.repPeriod is None or sub_req.maximumNumberOfReports is None)):
         log.error("Error occured: Invalid types")
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,

@@ -4,7 +4,7 @@ from fastapi import status,HTTPException
 
 from app.utils.logger import get_app_logger
 from app.utils.db_data_handler import DbDataHandler
-from app.schemas.monitoring_event import MonitoringEventReport, MonitoringType,MonitoringNotification,LocationInfo,MonitoringEventSubscriptionRequest,GeographicArea
+from app.schemas.monitoring_event import MonitoringEventReport, MonitoringType,MonitoringNotification,LocationInfo,MonitoringEventSubscriptionRequest,GeographicArea, LocationFailureCause
 
 log = get_app_logger()
 
@@ -14,6 +14,13 @@ async def fetch_event_report(location_db_handler: DbDataHandler, imsi:str, curre
         await asyncio.sleep(rep_period)
 
     fetched_document = await location_db_handler.find_location_by_imsi(imsi)
+    if fetched_document is None:
+        log.error("No event reports received from NEF.")
+        # raise HTTPException(
+        #     status_code=status.HTTP_404_NOT_FOUND,
+        #     detail="No subscriptions found for this AF"
+        # )
+        return MonitoringEventReport(msisdn=imsi,locFailureCause=LocationFailureCause.NOT_REGISTERED_UE,monitoringType=MonitoringType.LOCATION_REPORTING)
     tuple_result_info = parse_document_to_ue_location(fetched_document)
     event_time = tuple_result_info[0]
     location_info = tuple_result_info[1]

@@ -40,6 +40,8 @@ services:
     depends_on:
       mongodb:
         condition: service_healthy
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     networks:
       - nef-network
       #- shared

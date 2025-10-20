@@ -51,8 +51,8 @@ ENV PORT=${PORT} \
 
 COPY --from=build-base ${WORKSPACE} ${WORKSPACE}
 
-COPY ./src/${PACKAGE_NAME} ${WORKSPACE}/${PACKAGE_NAME}
-
+COPY ./src/${PACKAGE_NAME} ${WORKSPACE}${PACKAGE_NAME}
+COPY ./src/resources ${WORKSPACE}resources
 EXPOSE ${PORT}
 
 ARG USER

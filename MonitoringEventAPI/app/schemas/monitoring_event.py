@@ -28,10 +28,10 @@ class DurationMin(BaseModel):
     duration: int = Field(0,description="Unsigned integer identifying a period of time in units of minutes",ge=0)
 
 class LocationFailureCause(str,Enum):
-    position_denied = "POSITIONING_DENIED" # Positioning is denied.
-    unsupported_by_ue = "UNSUPPORTED_BY_UE" # Positioning is not supported by UE.
-    not_registered_ue = "NOT_REGISTERED_UE" # UE is not registered.
-    unspecified = "UNSPECIFIED" # Unspecified cause.
+    POSITION_DENIED = "POSITIONING_DENIED" # Positioning is denied.
+    UNSUPPORTED_BY_UE = "UNSUPPORTED_BY_UE" # Positioning is not supported by UE.
+    NOT_REGISTERED_UE = "NOT_REGISTERED_UE" # UE is not registered.
+    UNSPECIFIED = "UNSPECIFIED" # Unspecified cause.
 
 
 # class SupportedGADShapes(str,Enum):

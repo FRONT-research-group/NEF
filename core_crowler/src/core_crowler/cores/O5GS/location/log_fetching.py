@@ -1,13 +1,8 @@
-import os
+import docker
 import time
-import re
-from datetime import datetime, timedelta
+from datetime import datetime
 
-try:
-    import docker
-except ImportError:
-    docker = None
-
+from core_crowler.utils.log_fetcher_helper import load_logs
 from core_crowler.utils.logger import setup_logger
 import subprocess
 
@@ -31,21 +26,6 @@ class DockerLogFetcher:
         else:
             logger.warning("[WARN] Docker SDK not available. Falling back to CLI.")
 
-    def clean_ansi_codes(self, text):
-        ansi_escape = re.compile(r'\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])')
-        return ansi_escape.sub('', text)
-
-    def parse_timestamp(self, line):
-        match = re.match(r'(\d{2}/\d{2} \d{2}:\d{2}:\d{2}\.\d{3}):', line)
-        if not match:
-            return None
-        ts_str = match.group(1)
-        full_ts_str = f"{datetime.now().year}/{ts_str}"
-        try:
-            return datetime.strptime(full_ts_str, "%Y/%m/%d %H:%M:%S.%f")
-        except:
-            return None
-
     def fetch_logs_sdk(self):
         logs = self.container.logs(since=int(self.last_fetch_time.timestamp()), stdout=True, stderr=True)
         lines = logs.decode("utf-8").splitlines()
@@ -67,14 +47,7 @@ class DockerLogFetcher:
             logger.error(f"[ERROR] Failed to fetch logs: {e}")
             return []
 
-        logs = []
-        for line in lines:
-            line = self.clean_ansi_codes(line.strip())
-            ts = self.parse_timestamp(line)
-            if ts:
-                logs.append((ts, line))
-            elif "ueLocation" in line and logs:
-                logs[-1] = (logs[-1][0], logs[-1][1] + " " + line)
+        logs = load_logs(lines)
 
         self.last_fetch_time = now
         return [l for _, l in logs]
@@ -87,12 +60,3 @@ class DockerLogFetcher:
                 handler_fn(logs)
             time.sleep(self.poll_interval)
 
-# -----------------------------
-def handle_logs(logs):
-    for log in logs:
-        logger.info(f"[LOG] {log}")
-
-if __name__ == "__main__":
-    container_name = os.getenv("TARGET_CONTAINER_NAME", "amf")
-    fetcher = DockerLogFetcher(container_name=container_name, poll_interval=2)
-    fetcher.run(handle_logs)
