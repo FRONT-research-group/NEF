@@ -23,14 +23,11 @@ ACTION="$2"
 FILE=""
 
 if [ "$ROLE" = "provider" ]; then
-  LOCAL_DIR="./provider_impl/provider_folder/ppavlidis"
   FILE="capif_cert_server.pem"
 else
   echo "Invalid argument: $ROLE (must be 'provider')"
   exit 1
 fi
-
-LOCAL_PATH="$LOCAL_DIR/$FILE"
 
 if [ "$ACTION" = "download" ]; then
     echo \"Downloading $FILE from remote node...\"
