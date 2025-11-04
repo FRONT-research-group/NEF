@@ -39,7 +39,7 @@ def parse_timestamp(line: str) -> datetime:
     full_ts_str = f"{datetime.now().year}/{ts_str}"
     return datetime.strptime(full_ts_str, "%Y/%m/%d %H:%M:%S.%f")
 
-def load_logs(input_logs: list[str]):
+def load_logs(input_logs: list[str]) -> list[tuple[datetime, str]]:
     """
     Processes a list of log lines, cleaning ANSI codes, parsing timestamps, and grouping related log entries.
 
