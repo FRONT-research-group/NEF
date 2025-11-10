@@ -26,7 +26,7 @@ The implementation follows the **3GPP TS 29.122** specification for MonitoringEv
   ```
 - When enabled:
   - Deploys NEF MonitoringEvent API as CAPIF-enabled provider app with regards to **CAPIF framework** for secure communication and validation.
-  - Provides token verification via **certificate (`capif_cert_server.pem`)** obtained from an external SFTP server.
+  - Provides token verification via **certificate (`capif_cert_server.pem`)** obtained during the native provider onboarding into CAPIF.
   - Enables **Swagger UI authorization** for API testing.
 ### 2. Monitoring Event: Current Location
 - Allows users to subscribe for location monitoring of a target MSISDN.
@@ -68,10 +68,10 @@ All configuration is managed through a `.env` file (see more in the `.env` for *
 ## Deployment Commands
 | Command                         | Description                                                                    |
 | ------------------------------- | ------------------------------------------------------------------------------ |
-| `make deploy`                   | Deploys the NEF application, execute sftp script and configure networks        |
+| `make deploy`                   | Deploys the NEF application and configure networks                             |
 | `make clean`                    | Stops containers, removes volumes, and cleans up networks                      |
 
-To deploy CAPIF-ready deployment, environment variable `AUTH_ENABLED` must be set to `True`.  
+To deploy CAPIF-enabled deployment, environment variable `AUTH_ENABLED` must be set to `True`.  
 After that, the `make deploy` target will deploy 2 `docker-compose` files, one **base** file and one **overlay auth** file, `docker-compose.yaml` and `docker-compose.auth.yaml`, respectively. 
 
 ## Initialization & Simulation for Last Known Location as MongoDB-based Simulation
