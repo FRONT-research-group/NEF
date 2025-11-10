@@ -44,7 +44,6 @@ services:
       - "host.docker.internal:host-gateway"
     networks:
       - nef-network
-      #- shared
 
   core_crowler:
       build:
@@ -67,5 +66,3 @@ volumes:
 networks:
   nef-network:
     driver: bridge
-  # shared:
-  #   external: true

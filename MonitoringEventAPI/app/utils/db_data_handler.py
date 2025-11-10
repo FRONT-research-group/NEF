@@ -4,7 +4,7 @@ from app.utils.logger import get_app_logger
 
 settings = get_settings()
 
-log = get_app_logger()
+log = get_app_logger(__name__)
 
 
 class DbDataHandler:

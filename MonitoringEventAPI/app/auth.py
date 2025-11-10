@@ -6,7 +6,7 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from app.utils.logger import get_app_logger
 from app.config import get_settings
 
-logger = get_app_logger()
+logger = get_app_logger(__name__)
 settings = get_settings()
 
 def _get_public_key(filepath: str) -> bytes:
@@ -81,9 +81,12 @@ def get_authentication_dependency():
     if not settings.auth_enabled:
         return no_auth_dependency
     
-    PUB_KEY_PATH :str = settings.pub_key_path
+    PROVIDER_FOLDER_PATH :str = settings.provider_folder_path
     ALGORITHM :str = settings.algorithm
+    CAPIF_USER : str = settings.capif_user
 
+    PUB_KEY_PATH : str = f"{PROVIDER_FOLDER_PATH}/{CAPIF_USER}/capif_cert_server.pem"
+    
     PUB_KEY = _get_public_key(PUB_KEY_PATH)
 
     async def _auth_dependency(credentials: HTTPAuthorizationCredentials = Depends(HTTPBearer())) -> None:

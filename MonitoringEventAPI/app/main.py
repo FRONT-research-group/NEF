@@ -1,38 +1,38 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 
-from app.routers import monitoring_event
-from app.dependencies import startup_db_handler, cleanup_db_handler
+# from app.routers import monitoring_event
+from app.dependencies import startup_db_handler, cleanup_db_handler, onboard_to_capif, offboard_from_capif
 from app.config import get_settings
 from app.utils.logger import get_app_logger
 
 settings = get_settings()
 
-logger = get_app_logger()
+
+logger = get_app_logger(__name__)
 logger.info("Starting NEF Monitoring Event API")
-logger.info(f"Host: {settings.host}, Port: {settings.port}")
-logger.info(f"MongoDB URI: {settings.mongo_db_uri}")
-logger.info(
-    f"MongoDB IP: {settings.mongo_db_ip}, Port: {settings.mongo_db_port}")
-logger.info(f"MongoDB Name: {settings.mongo_db_name}")
-logger.info(
-    f"MongoDB Location Collection Name: {settings.mongo_location_collection_name}"
-)
-logger.info(
-    f"MongoDB Subscription Collection Name: {settings.mongo_subscription_collection_name}"
-)
-logger.info(f"Cache in MongoDB: {settings.cache_in_mongo}")
-logger.info(f"Cache Collection Name: {settings.cache_collection_name}")
-logger.info(
-    f"Map MSISDN to IMSI Collection Name: {settings.map_msisdn_imsi_collection_name}"
-)
-logger.info(
-    f"Map Cell ID to Polygon Collection Name: {settings.map_cellId_to_polygon_collection_name}"
-)
-logger.info(f"Auth Enabled: {settings.auth_enabled}")
+logger.info("Host: %s, Port: %s", settings.host, settings.port)
+logger.info("MongoDB URI: %s", settings.mongo_db_uri)
+logger.info("MongoDB IP: %s, Port: %s", settings.mongo_db_ip, settings.mongo_db_port)
+logger.info("MongoDB Name: %s", settings.mongo_db_name)
+logger.info("MongoDB Location Collection Name: %s", settings.mongo_location_collection_name)
+logger.info("MongoDB Subscription Collection Name: %s", settings.mongo_subscription_collection_name)
+logger.info("Cache in MongoDB: %s", settings.cache_in_mongo)
+logger.info("Cache Collection Name: %s", settings.cache_collection_name)
+logger.info("Map MSISDN to IMSI Collection Name: %s", settings.map_msisdn_imsi_collection_name)
+logger.info("Map Cell ID to Polygon Collection Name: %s", settings.map_cellId_to_polygon_collection_name)
+logger.info("Auth Enabled: %s", settings.auth_enabled)
 if settings.auth_enabled:
-    logger.info(f"Public Key Path: {settings.pub_key_path}")
-    logger.info(f"Algorithm: {settings.algorithm}")
+    logger.info("Provider folder path: %s", settings.provider_folder_path)
+    logger.info("Algorithm: %s", settings.algorithm)
+    
+    onboard_to_capif()
+
+#TODO check proper way of importing when i depend on env variables
+from app.routers import monitoring_event
+
+
+
 
 
 @asynccontextmanager
@@ -40,6 +40,8 @@ async def lifespan(app: FastAPI):
     await startup_db_handler()
     yield
     await cleanup_db_handler()
+    if settings.auth_enabled:
+        await offboard_from_capif()
 
 
 app = FastAPI(lifespan=lifespan)

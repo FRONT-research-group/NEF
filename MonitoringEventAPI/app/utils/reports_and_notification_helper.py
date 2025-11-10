@@ -6,7 +6,7 @@ from app.utils.logger import get_app_logger
 from app.utils.db_data_handler import DbDataHandler
 from app.schemas.monitoring_event import MonitoringEventReport, MonitoringType,MonitoringNotification,LocationInfo,MonitoringEventSubscriptionRequest,GeographicArea, LocationFailureCause
 
-log = get_app_logger()
+log = get_app_logger(__name__)
 
 async def fetch_event_report(location_db_handler: DbDataHandler, imsi:str, current_rep: int, rep_period: int ) -> MonitoringEventReport:
     log.info(f"Processing report for IMSI: {imsi}, Report Number: {current_rep}")

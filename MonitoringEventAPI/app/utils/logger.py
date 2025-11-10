@@ -15,18 +15,18 @@ def check_log_path_exists():
         os.makedirs(settings.log_directory_path)
 
 
-def get_app_logger():
+def get_app_logger(logger_name : str):
     '''
         Docstring
     '''
 
     check_log_path_exists()
 
-    app_logger = logging.getLogger('local_allocation_manager')
+    app_logger = logging.getLogger(logger_name)
 
     if not app_logger.handlers:
-        logger = logging.getLogger('local_allocation_manager')
-        logger.setLevel(logging.DEBUG)
+        #logger = logging.getLogger(logger_name)
+        app_logger.setLevel(logging.DEBUG)
 
         formatter = logging.Formatter(
             '%(asctime)s,%(msecs)03d %(levelname)-8s [%(filename)s:%(lineno)d] %(message)s',
@@ -43,9 +43,16 @@ def get_app_logger():
         stream_handler.setLevel(logging.INFO)
         stream_handler.setFormatter(formatter)
 
-        logger.addHandler(file_handler)
-        logger.addHandler(stream_handler)
+        app_logger.addHandler(file_handler)
+        app_logger.addHandler(stream_handler)
+        app_logger.propagate = False
+        
+        # Disable pymongo logs
+        logging.getLogger("pymongo").setLevel(logging.CRITICAL)
+        # Or completely disable it
+        logging.getLogger("pymongo").propagate = False
+        logging.getLogger("pymongo").handlers.clear()
 
-        return logger
+        return app_logger
 
     return app_logger

@@ -12,20 +12,6 @@ RUN rm -rf /var/lib/apt/lists/* && \
 
 COPY ./app /app
 
-ARG AUTH_ENABLED
-ENV AUTH_ENABLED=${AUTH_ENABLED}
-
-RUN if [ "$AUTH_ENABLED" = "True" ]; then \
-      echo "Copying CAPIF certificate..."; \
-      pwd; \
-      mkdir -p /app/certs; \
-      cd app && ls -la certs; \
-      ls -la; \
-    #   cp ./certs/capif_cert_server.pem ./app/certs/capif_cert_server.pem; \
-    else \
-      echo "Auth disabled: skipping certificate copy."; \
-    fi
-
 ENV HOST="127.0.0.1"
 ENV PORT="8080"
 ENV LOG_DIRECTORY_PATH="./app/log1/"
@@ -41,4 +27,4 @@ EXPOSE 8000
 # # Without `sh -c`, Docker passes "${PORT}" literally to uvicorn, resulting in an invalid value.
 # # We set default values for HOST and PORT here, which can be overridden by docker-compose
 # # or runtime environment variables.
-ENTRYPOINT ["sh", "-c", "uvicorn app.main:app --host ${HOST} --port ${PORT}"]
+ENTRYPOINT ["sh", "-c", "exec uvicorn app.main:app --host ${HOST} --port ${PORT}"]

@@ -2,10 +2,11 @@ from app.utils.db_data_handler import DbDataHandler
 from app.utils.logger import get_app_logger
 from app.config import get_settings
 from app.utils.db_data_handler import db_data_handler as db_handler
+from app.provider_onboarding.provider_capif_connector import onboard_provider, offboard_provider
 
 settings = get_settings()
 
-log = get_app_logger()
+log = get_app_logger(__name__)
 
 async def startup_db_handler() -> None:
     log.info("Mongo's DB Client instantiation process begin")
@@ -31,3 +32,23 @@ async def cleanup_db_handler() -> None:
     if db_handler.client:
         await db_handler.client.close()
     log.info("Mongo's DB Client cleanup process finished successfully")
+
+def onboard_to_capif() -> None:
+    try:
+        log.info("Onboarding to CAPIF process begin")
+        
+        onboard_provider()
+    
+        log.info("Onboarding to CAPIF process finished successfully")
+    except Exception as exc:
+        log.error("Onboarding to CAPIF process failed: %s", exc)
+        raise
+    
+async def offboard_from_capif() -> None:
+    try:
+        log.info("Offboarding from CAPIF process begin")
+        offboard_provider()
+        log.info("Offboarding from CAPIF process finished successfully")
+    except Exception as exc:
+        log.error("Offboarding from CAPIF process failed: %s", exc)
+        raise

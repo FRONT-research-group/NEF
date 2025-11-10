@@ -1,7 +1,7 @@
 services:
   nef:
-    volumes:
-      - ./MonitoringEventAPI/certs/capif_cert_server.pem:/app/certs/capif_cert_server.pem:ro
+    # volumes:
+    #   - ./MonitoringEventAPI/certs/capif_cert_server.pem:/app/certs/capif_cert_server.pem:ro
     networks:
       - shared
 

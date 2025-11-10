@@ -13,7 +13,7 @@ from app.schemas.monitoring_event import MonitoringEventSubscriptionRequest, Mon
 subscriptions_db: dict[str,dict[str,MonitoringEventSubscriptionRequest]] = defaultdict(dict)
 task_registry: dict[str,asyncio.Task] = {}
 
-log = get_app_logger()
+log = get_app_logger(__name__)
 
 local_last_known_data = LocalLastKnownData()
 
