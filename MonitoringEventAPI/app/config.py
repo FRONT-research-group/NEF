@@ -14,7 +14,7 @@ class Settings(BaseSettings):
     camara_case: bool | None = False
     #cache_collection_name: str | None
     map_msisdn_imsi_collection_name: str | None
-    #map_cellId_to_polygon_collection_name: str | None
+    map_cellId_to_polygon_collection_name: str | None
     auth_enabled: bool = True
     provider_folder_path: str | None = None
     algorithm: str | None = "RS256"
