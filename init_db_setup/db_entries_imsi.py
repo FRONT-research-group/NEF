@@ -8,6 +8,8 @@ collection = db["imsi_to_phone_number"]
 collection.delete_many({})
 
 #_id as imsi
+#001010143245445
+#001010000000001
 mappings = [
     {
         "_id": "001010143245445",
