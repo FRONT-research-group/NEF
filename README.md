@@ -10,8 +10,7 @@ It is built using **Python** and **FastAPI**, containerized via **Docker**, and 
 The NEF MonitoringEvent API allows external applications to:
 - **Subscribe** to monitoring events such as user **current location**.
 - **Receive reports** (via callback URL) based on event occurrences or configured intervals.
-- **Query the last known location** for specific subscribers.
-- **Simulate MonitoringEventReports** via MongoDB for testing or integration with northbound APIs like **CAMARA** or **xAPP**.
+- **Query the last known location** for specific subscribers. This is used for integration with northbound APIs like **CAMARA** or **xAPP**.
 
 The implementation follows the **3GPP TS 29.122** specification for MonitoringEvent API and supports integration within the **CAPIF** security framework.
 
@@ -37,12 +36,9 @@ The implementation follows the **3GPP TS 29.122** specification for MonitoringEv
 - NEF sends MonitoringEventReports based on network-detected location updates.
 ### 3. Monitoring Event: Last Known Location
 - Provides immediate MonitoringEventReport for a given `scsAsId` and `msisdn`.
-- Returns the last known location from memory if any record exists.
+- Returns the last known location from a subscriber in the database if any record exists.
 ### 4. Monitoring Event: Last Known Location as MongoDB-based Simulation (CAMARA / xAPP Integration) 
-- Simulated **MonitoringEventReports** are preconfigured in MongoDB.
-- IMSI mapper collection links **phone numbers ↔ IMSI identifiers**.
-- Enables northbound consumers (like **CAMARA Device Location API**) to fetch monitoring events without live network dependency.
-
+- Same as the above but with IMSI mapper collection links **phone numbers ↔ IMSI identifiers**.
 ---
 
 ## 🏗️ Architecture & Deployment
