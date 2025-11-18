@@ -11,10 +11,10 @@ class Settings(BaseSettings):
     mongo_db_name: str | None = None
     mongo_location_collection_name: str
     mongo_subscription_collection_name: str
-    cache_in_mongo: bool | None = False
-    cache_collection_name: str | None
+    camara_case: bool | None = False
+    #cache_collection_name: str | None
     map_msisdn_imsi_collection_name: str | None
-    map_cellId_to_polygon_collection_name: str | None
+    #map_cellId_to_polygon_collection_name: str | None
     auth_enabled: bool = True
     provider_folder_path: str | None = None
     algorithm: str | None = "RS256"

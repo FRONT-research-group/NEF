@@ -8,12 +8,12 @@ from app.schemas.monitoring_event import MonitoringEventReport, MonitoringType,M
 
 log = get_app_logger(__name__)
 
-async def fetch_event_report(location_db_handler: DbDataHandler, imsi:str, current_rep: int, rep_period: int ) -> MonitoringEventReport:
-    log.info(f"Processing report for IMSI: {imsi}, Report Number: {current_rep}")
+async def fetch_event_report(location_db_handler: DbDataHandler, imsi:str, current_rep: int, rep_period: int, camara_flag: bool = False ) -> MonitoringEventReport:
+    log.info("Processing report for IMSI: %s, Report Number: %d", imsi, current_rep)
     if rep_period is not None:
         await asyncio.sleep(rep_period)
 
-    fetched_document = await location_db_handler.find_location_by_imsi(imsi)
+    fetched_document = await location_db_handler.find_location_by_imsi(imsi, camara_flag)
     if fetched_document is None:
         log.error("No event reports received from NEF.")
         # raise HTTPException(
@@ -28,17 +28,17 @@ async def fetch_event_report(location_db_handler: DbDataHandler, imsi:str, curre
     return MonitoringEventReport(msisdn=imsi,locationInfo=location_info,monitoringType=MonitoringType.LOCATION_REPORTING,eventTime=event_time)
 
 async def mapper_msisdn_to_imsi(db_data_handler: DbDataHandler, msisdn: str, af_id: str) -> str | None:
-    log.info(f"MSISDN {msisdn} for AF ID {af_id}")
+    log.info("MSISDN %s for AF ID %s", msisdn, af_id)
     fetched_document = await db_data_handler.fetch_mapping_from_msisdn_to_imsi(msisdn, af_id)
     if fetched_document is None:
         return None
     fetched_imsi = fetched_document.get("_id")
-    log.info(f"Fetched IMSI {fetched_imsi}")
+    log.info("Fetched IMSI %s", fetched_imsi)
     return fetched_imsi
 
 async def mapper_cell_id_to_polygon_shape_area(db_data_handler: DbDataHandler, cell_id : str) -> GeographicArea:
     fetched_area = await db_data_handler.fetch_mapping_from_cell_id_to_polygon(cell_id)
-    log.info(f"Fetched geographic area {fetched_area}")
+    log.info("Fetched geographic area %s", fetched_area)
     return GeographicArea(**fetched_area)
 
 def parse_document_to_ue_location(document: dict | None = None) -> tuple[datetime,LocationInfo]:
@@ -49,7 +49,7 @@ def parse_document_to_ue_location(document: dict | None = None) -> tuple[datetim
             detail="No subscriptions found for this AF"
         )
     else:
-        log.info(f"Fetched Docuement: {document}")
+        log.info("Fetched Docuement: %s", document)
         event_time = document["UELocationTimestamp"]
         # age_of_location_info = document[]
         cell_id = document["cellId"]
@@ -81,17 +81,17 @@ def parse_and_tranform_document_from_db(documents: list) -> list[tuple[str,Monit
             subscriptions.append((subscription_id,fetched_subscription))
         except Exception as exc:
             log.error("Error tranfsorming document", exc_info=exc)
-    log.info(f"the documents that converted to subs are {subscriptions}")
+    log.info("The documents that converted to subs are %s", subscriptions)
 
     return subscriptions
 
 def create_monitoring_notification(subscription_link: str, event_report: list[MonitoringEventReport]) -> MonitoringNotification:
-    log.info(f"I have received the event report for subscription: {subscription_link}") 
+    log.info("I have received the event report for subscription: %s", subscription_link) 
     return MonitoringNotification(subscription=subscription_link, monitoringEventReports=event_report)
 
 async def send_notification(callback_url: str, monitoring_notification: MonitoringNotification) -> None:
     async with httpx.AsyncClient() as client:
-            log.info(f"Monitoring Notification: {monitoring_notification}")
+            log.info("Monitoring Notification: %s", monitoring_notification)
             try:
                 result = await client.post(callback_url, json=monitoring_notification.model_dump_json())
                 if result.status_code == status.HTTP_204_NO_CONTENT:

@@ -17,10 +17,8 @@ logger.info("MongoDB IP: %s, Port: %s", settings.mongo_db_ip, settings.mongo_db_
 logger.info("MongoDB Name: %s", settings.mongo_db_name)
 logger.info("MongoDB Location Collection Name: %s", settings.mongo_location_collection_name)
 logger.info("MongoDB Subscription Collection Name: %s", settings.mongo_subscription_collection_name)
-logger.info("Cache in MongoDB: %s", settings.cache_in_mongo)
-logger.info("Cache Collection Name: %s", settings.cache_collection_name)
+logger.info("CAMARA CASE: %s", settings.camara_case)
 logger.info("Map MSISDN to IMSI Collection Name: %s", settings.map_msisdn_imsi_collection_name)
-logger.info("Map Cell ID to Polygon Collection Name: %s", settings.map_cellId_to_polygon_collection_name)
 logger.info("Auth Enabled: %s", settings.auth_enabled)
 if settings.auth_enabled:
     logger.info("Provider folder path: %s", settings.provider_folder_path)
