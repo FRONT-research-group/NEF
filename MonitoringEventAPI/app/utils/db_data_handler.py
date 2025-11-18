@@ -28,9 +28,11 @@ class DbDataHandler:
         client = AsyncMongoClient(ip,port)
         return cls(client,db_name,collection_name)
     
-    async def find_location_by_imsi(self, imsi: str) -> dict | None:
+    async def find_location_by_imsi(self, imsi: str, camara_flag : bool = None) -> dict | None:
         """Finds location data based on IMSI."""
         self.collection = self.db[settings.mongo_location_collection_name]
+        if camara_flag:
+            return await self.collection.find_one({"_id": imsi},projection={'_id': False})
         return await self.collection.find_one({"_id": imsi})
     
     async def fetch_report_from_db_cache(self,imsi: str) -> dict | None:
