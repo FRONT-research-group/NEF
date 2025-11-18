@@ -38,7 +38,9 @@ The implementation follows the **3GPP TS 29.122** specification for MonitoringEv
 - Provides immediate MonitoringEventReport for a given `scsAsId` and `msisdn`.
 - Returns the last known location from a subscriber in the database if any record exists.
 ### 4. Monitoring Event: Last Known Location as MongoDB-based Simulation (CAMARA / xAPP Integration) 
-- Same as the above but with IMSI mapper collection links **phone numbers ↔ IMSI identifiers**.
+- Same as the above but with:
+  -  IMSI mapper collection links **phone numbers ↔ IMSI identifiers**.
+  -  CellId to polygon area collection mapper that maps **cellId ↔ polygon coords**
 ---
 
 ## 🏗️ Architecture & Deployment
