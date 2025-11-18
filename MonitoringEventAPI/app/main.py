@@ -19,6 +19,7 @@ logger.info("MongoDB Location Collection Name: %s", settings.mongo_location_coll
 logger.info("MongoDB Subscription Collection Name: %s", settings.mongo_subscription_collection_name)
 logger.info("CAMARA CASE: %s", settings.camara_case)
 logger.info("Map MSISDN to IMSI Collection Name: %s", settings.map_msisdn_imsi_collection_name)
+logger.info("Map Cell ID to Polygon Collection Name %s:", settings.map_cellId_to_polygon_collection_name)
 logger.info("Auth Enabled: %s", settings.auth_enabled)
 if settings.auth_enabled:
     logger.info("Provider folder path: %s", settings.provider_folder_path)

@@ -8,7 +8,7 @@ from app.utils.logger import get_app_logger
 from app.utils.db_data_handler import DbDataHandler
 from app.utils.local_last_known_data import LocalLastKnownData
 from app.config import get_settings
-from app.schemas.monitoring_event import MonitoringEventSubscriptionRequest, MonitoringEventSubscriptionResponse, MonitoringEventReport, MonitoringType,LocationType
+from app.schemas.monitoring_event import MonitoringEventSubscriptionRequest, MonitoringEventSubscriptionResponse, MonitoringEventReport, MonitoringType,LocationType, GeographicArea
 
 subscriptions_db: dict[str,dict[str,MonitoringEventSubscriptionRequest]] = defaultdict(dict)
 task_registry: dict[str,asyncio.Task] = {}
@@ -23,6 +23,10 @@ async def generate_event_report_and_send_notification(db_data_handler: DbDataHan
     try:
         for report_num in range(1,max_num_reps+1):
             event_report = await fetch_event_report(db_data_handler,msisdn,report_num,rep_period)
+            set_polygon_area = await db_data_handler.fetch_mapping_from_cell_id_to_polygon(event_report.locationInfo.cellId)
+            if set_polygon_area is not None:
+                event_report.locationInfo.geographicArea = GeographicArea.model_validate(set_polygon_area["geographicArea"])
+                log.info("Modified Event Report with geographic area: %s",event_report)
             #local_last_known_data.add(af_id,msisdn,event_report)
             monitoring_notification = create_monitoring_notification(subscription_link,[event_report])
             if(report_num == max_num_reps):
@@ -65,6 +69,12 @@ async def register_subscription_pef_af(af_id: str, sub_req: MonitoringEventSubsc
             #fetched_event_report = transform_document_to_event_report(document_result)
             fetched_event_report = await fetch_event_report(db_data_handler,msisdn,1,None, True)
             log.info("Event Report fetched: %s",fetched_event_report)
+            
+            set_polygon_area = await db_data_handler.fetch_mapping_from_cell_id_to_polygon(fetched_event_report.locationInfo.cellId)
+            if set_polygon_area is not None:
+                fetched_event_report.locationInfo.geographicArea = GeographicArea.model_validate(set_polygon_area["geographicArea"])
+                log.info("Modified Event Report with geographic area: %s",fetched_event_report)
+                
             return fetched_event_report
             #return local_last_known_data.query(af_id,msisdn)
             
@@ -128,6 +138,12 @@ async def delete_subscription_by_sub_id(af_id: str, subscription_id: str, db_dat
         monitoring_event_request = MonitoringEventSubscriptionRequest(**fetched_subscription["monitoringEventSubscription"])
         imsi = monitoring_event_request.msisdn
         task_registry[subscription_id].cancel()
+        
+        event_report = await fetch_event_report(db_data_handler,imsi,1,None)
+        set_polygon_area = await db_data_handler.fetch_mapping_from_cell_id_to_polygon(event_report.locationInfo.cellId)
+        if set_polygon_area is not None:
+            event_report.locationInfo.geographicArea = GeographicArea.model_validate(set_polygon_area["geographicArea"])
+            log.info("Modified Event Report with geographic area: %s",event_report)
         return await fetch_event_report(db_data_handler,imsi,1,None)
         #return local_last_known_data.query(af_id,imsi)
     else:
