@@ -75,7 +75,7 @@ After that, the `make deploy` target will deploy 2 `docker-compose` files, one *
 ## Initialization & Simulation for Last Known Location as MongoDB-based Simulation
 The `init_db_setup` folder includes `python scripts` to prepopulate MongoDB with:
 
-- `MonitoringEventReports` for last known location entries.
+- `CellId to polygon area Coords mapping` entries.
 - IMSI mapper entries for test phoneNumbers.
 This setup allows the NEF to simulate MonitoringEventReports for northbound APIs.
 Create a python `venv` and install `requirements.txt` to execute the `python scripts`.
@@ -149,9 +149,9 @@ sequenceDiagram
     Client->>NEF: POST /reports/last-known (msisdn, scsAsId)
     NEF->>Mongo: Query last known location
     Mongo-->>NEF: Return event data
-    NEF-->>Client: Return MonitoringEventReport (Either from memory or Mongo based on feature configuration)
+    NEF-->>Client: Return MonitoringEventReport (Regards to live network data)
 
-    Note over NEF,Mongo: If simulation mode enabled, reports and IMSI mappings<br>are fetched from MongoDB collections instead of live network data.
+    Note over NEF,Mongo: If simulation mode enabled, IMSI mappings<br>are fetched from MongoDB collection over live network data.
 ```
 
 ---
