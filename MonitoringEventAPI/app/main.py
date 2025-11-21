@@ -20,19 +20,17 @@ logger.info("MongoDB Subscription Collection Name: %s", settings.mongo_subscript
 logger.info("CAMARA CASE: %s", settings.camara_case)
 logger.info("Map MSISDN to IMSI Collection Name: %s", settings.map_msisdn_imsi_collection_name)
 logger.info("Map Cell ID to Polygon Collection Name %s:", settings.map_cellId_to_polygon_collection_name)
+logger.info("Project API Name: %s",settings.project_api_name)
 logger.info("Auth Enabled: %s", settings.auth_enabled)
 if settings.auth_enabled:
     logger.info("Provider folder path: %s", settings.provider_folder_path)
     logger.info("Algorithm: %s", settings.algorithm)
     
     onboard_to_capif()
+    
 
 #TODO check proper way of importing when i depend on env variables
 from app.routers import monitoring_event
-
-
-
-
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -45,8 +43,10 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 
-app.include_router(monitoring_event.router, prefix="/3gpp-monitoring-event/v1")
-
+if settings.project_api_name is None or settings.project_api_name == "":
+    app.include_router(monitoring_event.router, prefix="/3gpp-monitoring-event/v1")
+else:
+    app.include_router(monitoring_event.router, prefix="/3gpp-monitoring-event-" + settings.project_api_name +"/v1")
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host=settings.host, port=settings.port)

@@ -19,6 +19,7 @@ class Settings(BaseSettings):
     provider_folder_path: str | None = None
     algorithm: str | None = "RS256"
     capif_user: str | None = None
+    project_api_name: str | None = None
 
 settings = Settings()
 
