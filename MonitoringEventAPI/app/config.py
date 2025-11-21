@@ -18,6 +18,7 @@ class Settings(BaseSettings):
     auth_enabled: bool = True
     pub_key_path: str | None = None
     algorithm: str | None = "RS256"
+    project_api_name: str | None = None
 
 settings = Settings()
 
