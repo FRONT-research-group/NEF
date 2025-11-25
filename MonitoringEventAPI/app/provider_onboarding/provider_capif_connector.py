@@ -6,6 +6,7 @@ logger = get_app_logger(__name__)
 
 
 #API_HOST = os.getenv('API_HOST', '10.220.2.43')
+PROJECT_API_NAME = os.getenv('PROJECT_API_NAME', '')
 PROVIDER_API_HOST = os.getenv('PROVIDER_API_HOST', '127.0.0.1')
 PROVIDER_API_PORT = os.getenv('PROVIDER_API_PORT', '8001')
 PROVIDER_CONFIG_FILE = os.getenv('PROVIDER_CONFIG_FILE', './provider_config_sample.json')
@@ -13,7 +14,12 @@ PROVIDER_OPENAPI_FILE = os.getenv('PROVIDER_OPENAPI_FILE', './openapi.yaml')
 PROVIDER_API_DESC_FILE = os.getenv('PROVIDER_API_DESC_FILE', './3gpp-monitoring-event.json') # should match the prefix of the URL
 #API_DESC_FILE = os.getenv('API_DESC_FILE', './provider-app.json') # should match the prefix of the URL
 
-API_URL = f"https://{PROVIDER_API_HOST}:{PROVIDER_API_PORT}/3gpp-monitoring-event/v1"
+if PROJECT_API_NAME is None or PROJECT_API_NAME == "":
+    API_URL = f"https://{PROVIDER_API_HOST}:{PROVIDER_API_PORT}/3gpp-monitoring-event/v1"
+else:
+    API_URL = f"https://{PROVIDER_API_HOST}:{PROVIDER_API_PORT}/3gpp-monitoring-event-{PROJECT_API_NAME}/v1"
+    api_name_with_suffix = f"-{PROJECT_API_NAME}.json"
+    PROVIDER_API_DESC_FILE = PROVIDER_API_DESC_FILE.replace(".json",api_name_with_suffix) 
 #API_URL = f"https://{API_HOST}:{API_PORT}/provider-app/v1"
 
 def onboard_provider() -> None:
